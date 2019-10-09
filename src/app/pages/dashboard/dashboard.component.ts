@@ -41,6 +41,14 @@ export class DashboardComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.generate();
+  }
+
+  generate(): void {
+    this.participants.forEach((participant) => {
+      participant.picked = '';
+    });
+
     this.participants.forEach((participant) => {
       const availableParticipants = this.participants.filter((p) => !p.picked && p !== participant);
       const randomAvailableParticipant = availableParticipants[Math.floor(Math.random() * availableParticipants.length)];

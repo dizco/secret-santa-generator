@@ -1,6 +1,11 @@
 <div class="row">
   <nb-card class="col-md-6">
     <nb-card-body>
+      <div class="row">
+        <div class="col-12 d-flex justify-content-end">
+          <button nbButton ghost status="primary" (click)="generate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
+        </div>
+      </div>
       <nb-list>
         <nb-list-item *ngFor="let participant of participants">
           <div class="row">
