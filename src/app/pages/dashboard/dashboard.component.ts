@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ArrayHelper } from '../../@core/helpers/array-helper';
 
 @Component({
   selector: 'ngx-dashboard',
@@ -49,10 +50,11 @@ export class DashboardComponent implements OnInit {
       participant.picked = '';
     });
 
-    this.participants.forEach((participant) => {
-      const availableParticipants = this.participants.filter((p) => !p.picked && p !== participant);
-      const randomAvailableParticipant = availableParticipants[Math.floor(Math.random() * availableParticipants.length)];
-      randomAvailableParticipant.picked = participant.name;
-    });
+    const shuffled = ArrayHelper.completeShuffle(this.participants);
+    for (let i = 0; i < this.participants.length; i++) {
+      this.participants[i].picked = shuffled[i].name;
+    }
   }
+
+
 }
