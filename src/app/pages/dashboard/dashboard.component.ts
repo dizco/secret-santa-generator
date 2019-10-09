@@ -40,8 +40,6 @@ export class DashboardComponent implements OnInit {
     },
   ];
 
-  selections = [];
-
   ngOnInit(): void {
     this.participants.forEach((participant) => {
       const availableParticipants = this.participants.filter((p) => !p.picked && p !== participant);

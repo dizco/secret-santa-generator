@@ -1,9 +1,25 @@
 <div class="row">
-  <nb-card>
+  <nb-card class="col-md-6">
     <nb-card-body>
-      <div *ngFor="let participant of participants">
-        {{ participant.name }} -> {{ participant.picked }}
-      </div>
+      <nb-list>
+        <nb-list-item *ngFor="let participant of participants">
+          <div class="row">
+            <div class="col-5">
+              <button nbButton outline status="primary" disabled class="btn-with-icon" style="width: 100%; display: flex; justify-content: start">
+                <nb-user [name]="participant.name" [showTitle]="false" size="medium"></nb-user>
+              </button>
+            </div>
+            <div class="col-2 d-flex justify-content-center align-items-center">
+              <nb-icon icon="arrow-forward-outline"></nb-icon>
+            </div>
+            <div class="col-5">
+              <button nbButton outline status="primary" disabled class="btn-with-icon" style="width: 100%; display: flex; justify-content: start">
+                <nb-user [name]="participant.picked" [showTitle]="false" size="medium"></nb-user>
+              </button>
+            </div>
+          </div>
+        </nb-list-item>
+      </nb-list>
     </nb-card-body>
   </nb-card>
 </div>
