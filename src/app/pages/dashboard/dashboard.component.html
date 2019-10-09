@@ -1,5 +1,30 @@
 <div class="row">
-  <nb-card>
-    <nb-card-body>Hello from ngx-admin sandbox project.</nb-card-body>
+  <nb-card class="col-md-6">
+    <nb-card-body>
+      <div class="row">
+        <div class="col-12 d-flex justify-content-end">
+          <button nbButton ghost status="primary" (click)="generate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
+        </div>
+      </div>
+      <nb-list>
+        <nb-list-item *ngFor="let participant of participants">
+          <div class="row">
+            <div class="col-5">
+              <button nbButton outline status="primary" disabled class="btn-with-icon" style="width: 100%; display: flex; justify-content: start">
+                <nb-user [name]="participant.name" [showTitle]="false" size="medium"></nb-user>
+              </button>
+            </div>
+            <div class="col-2 d-flex justify-content-center align-items-center">
+              <nb-icon icon="arrow-forward-outline"></nb-icon>
+            </div>
+            <div class="col-5">
+              <button nbButton outline status="primary" disabled class="btn-with-icon" style="width: 100%; display: flex; justify-content: start">
+                <nb-user [name]="participant.picked" [showTitle]="false" size="medium"></nb-user>
+              </button>
+            </div>
+          </div>
+        </nb-list-item>
+      </nb-list>
+    </nb-card-body>
   </nb-card>
 </div>
