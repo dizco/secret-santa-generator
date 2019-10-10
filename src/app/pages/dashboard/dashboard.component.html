@@ -1,23 +1,26 @@
 <div class="row">
-  <nb-card class="col-md-6">
+  <nb-card class="col-xl-10">
     <nb-card-body>
       <div class="row">
         <div class="col-12 d-flex justify-content-end">
-          <button nbButton ghost status="primary" (click)="generate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
+          <button *ngIf="!editable" nbButton ghost status="primary" size="small" (click)="enterEditMode()" nbTooltip="Edit draw"><nb-icon icon="edit"></nb-icon></button>
+          <button *ngIf="editable" nbButton ghost status="primary" size="small" (click)="save()" nbTooltip="Save"><nb-icon icon="save"></nb-icon></button>
+          <button nbButton ghost status="primary" size="small" (click)="generate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
         </div>
       </div>
       <nb-list>
         <nb-list-item *ngFor="let participant of participants">
           <div class="row">
-            <div class="col-5">
+            <div class="col-md-5">
               <button nbButton outline status="primary" disabled class="btn-with-icon" style="width: 100%; display: flex; justify-content: start">
-                <nb-user [name]="participant.name" [showTitle]="false" size="medium"></nb-user>
+                <nb-user *ngIf="!editable" [name]="participant.name" [showTitle]="false" size="medium"></nb-user>
+                <input *ngIf="editable" type="text" nbInput placeholder="Participant name" [(ngModel)]="participant.name" style="max-width: 100%;">
               </button>
             </div>
-            <div class="col-2 d-flex justify-content-center align-items-center">
+            <div class="col-md-2 d-flex justify-content-center align-items-center">
               <nb-icon icon="arrow-forward-outline"></nb-icon>
             </div>
-            <div class="col-5">
+            <div class="col-md-5">
               <button nbButton outline status="primary" disabled class="btn-with-icon" style="width: 100%; display: flex; justify-content: start">
                 <nb-user [name]="participant.picked" [showTitle]="false" size="medium"></nb-user>
               </button>
@@ -25,6 +28,11 @@
           </div>
         </nb-list-item>
       </nb-list>
+      <div class="row d-flex justify-content-center">
+        <div class="col-md-4 col-6">
+          <button *ngIf="editable" nbButton outline status="success" (click)="addParticipant()" class="m-3" style="width: 100%;"><nb-icon icon="plus"></nb-icon></button>
+        </div>
+      </div>
     </nb-card-body>
   </nb-card>
 </div>

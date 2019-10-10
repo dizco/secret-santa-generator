@@ -1,12 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
 
+interface Participant {
+  name: string;
+  picked: string;
+}
+
 @Component({
   selector: 'ngx-dashboard',
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
-  participants = [
+  editable = false;
+
+  participants: Participant[] = [
     {
       name: 'Gabriel',
       picked: '',
@@ -45,10 +52,20 @@ export class DashboardComponent implements OnInit {
     this.generate();
   }
 
+  enterEditMode(): void {
+    this.clearPicks();
+    this.editable = true;
+  }
+
+  save(): void {
+    this.editable = false;
+    this.generate();
+  }
+
   generate(): void {
-    this.participants.forEach((participant) => {
-      participant.picked = '';
-    });
+    this.clearPicks();
+
+    this.filterInvalidParticipants();
 
     const shuffled = ArrayHelper.completeShuffle(this.participants);
     for (let i = 0; i < this.participants.length; i++) {
@@ -56,5 +73,26 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  addParticipant(): void {
+    this.participants.push(this.buildEmptyParticipant());
+  }
 
+  private clearPicks(): void {
+    this.participants.forEach((participant) => {
+      participant.picked = '';
+    });
+  }
+
+  private filterInvalidParticipants(): void {
+    this.participants = this.participants.filter((participant) => {
+      return participant.name !== '';
+    });
+  }
+
+  private buildEmptyParticipant(): Participant {
+    return {
+      name: '',
+      picked: '',
+    };
+  }
 }
