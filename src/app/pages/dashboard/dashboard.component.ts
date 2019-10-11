@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { filter, map, takeWhile } from 'rxjs/operators';
 
 interface Participant {
   name: string;
@@ -10,56 +12,63 @@ interface Participant {
   selector: 'ngx-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit {
-  editable = false;
+export class DashboardComponent implements OnInit, OnDestroy {
+  private alive = true;
+
+  private isEditingSubject = new BehaviorSubject<boolean>(true);
+
+  isEditing: Observable<boolean> = this.isEditingSubject.pipe(
+    takeWhile(() => this.alive),
+    map(v => v),
+  );
 
   participants: Participant[] = [
     {
-      name: 'Gabriel',
+      name: 'Nick',
       picked: '',
     },
     {
-      name: 'Myriam',
+      name: 'Eva',
       picked: '',
     },
     {
-      name: 'Élodie',
+      name: 'Jack',
       picked: '',
     },
     {
-      name: 'Antoine',
+      name: 'Lee',
       picked: '',
     },
     {
-      name: 'Jérémie',
+      name: 'Alan',
       picked: '',
     },
     {
-      name: 'Rosalie',
-      picked: '',
-    },
-    {
-      name: 'Camille',
-      picked: '',
-    },
-    {
-      name: 'Maxime',
+      name: 'Kate',
       picked: '',
     },
   ];
 
   ngOnInit(): void {
-    this.generate();
+    this.isEditing.pipe(
+      takeWhile(() => this.alive),
+      filter((value) => !value), // Only when isEditing becomes false
+    ).subscribe({
+      next: (_) => this.generate(),
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.alive = false;
   }
 
   enterEditMode(): void {
     this.clearPicks();
-    this.editable = true;
+    this.isEditingSubject.next(true);
   }
 
   save(): void {
-    this.editable = false;
-    this.generate();
+    this.isEditingSubject.next(false);
   }
 
   generate(): void {
@@ -73,8 +82,12 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  removeParticipant(participant: Participant): void {
+    this.participants = this.participants.filter((p) => p !== participant);
+  }
+
   addParticipant(): void {
-    this.participants.push(this.buildEmptyParticipant());
+    this.participants.push(DashboardComponent.buildEmptyParticipant());
   }
 
   private clearPicks(): void {
@@ -89,7 +102,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private buildEmptyParticipant(): Participant {
+  private static buildEmptyParticipant(): Participant {
     return {
       name: '',
       picked: '',

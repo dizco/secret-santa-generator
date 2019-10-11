@@ -3,8 +3,8 @@
     <nb-card-body>
       <div class="row">
         <div class="col-12 d-flex justify-content-end">
-          <button *ngIf="!editable" nbButton ghost status="primary" size="small" (click)="enterEditMode()" nbTooltip="Edit draw"><nb-icon icon="edit"></nb-icon></button>
-          <button *ngIf="editable" nbButton ghost status="primary" size="small" (click)="save()" nbTooltip="Save"><nb-icon icon="save"></nb-icon></button>
+          <button *ngIf="!(isEditing | async)" nbButton ghost status="primary" size="small" (click)="enterEditMode()" nbTooltip="Edit draw"><nb-icon icon="edit"></nb-icon></button>
+          <button *ngIf="isEditing | async" nbButton ghost status="primary" size="small" (click)="save()" nbTooltip="Save and generate"><nb-icon icon="save"></nb-icon></button>
           <button nbButton ghost status="primary" size="small" (click)="generate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
         </div>
       </div>
@@ -13,9 +13,10 @@
           <div class="row">
             <div class="col-md-5">
               <button nbButton outline status="primary" disabled class="btn-with-icon" style="width: 100%; display: flex; justify-content: start">
-                <nb-user *ngIf="!editable" [name]="participant.name" [showTitle]="false" size="medium"></nb-user>
-                <input *ngIf="editable" type="text" nbInput placeholder="Participant name" [(ngModel)]="participant.name" style="max-width: 100%;">
+                <nb-user *ngIf="!(isEditing | async)" [name]="participant.name" [showTitle]="false" size="medium"></nb-user>
+                <input *ngIf="isEditing | async" type="text" nbInput placeholder="Participant name" [(ngModel)]="participant.name" style="max-width: 100%;">
               </button>
+              <button *ngIf="isEditing | async" nbButton ghost status="danger" size="small" (click)="removeParticipant(participant)" nbTooltip="Remove participant" class="position-absolute" style="right: 1em; top: 1em;"><nb-icon icon="trash"></nb-icon></button>
             </div>
             <div class="col-md-2 d-flex justify-content-center align-items-center">
               <nb-icon icon="arrow-forward-outline"></nb-icon>
@@ -29,8 +30,8 @@
         </nb-list-item>
       </nb-list>
       <div class="row d-flex justify-content-center">
-        <div class="col-md-4 col-6">
-          <button *ngIf="editable" nbButton outline status="success" (click)="addParticipant()" class="m-3" style="width: 100%;"><nb-icon icon="plus"></nb-icon></button>
+        <div class="col-xl-2 col-md-4 col-6">
+          <button *ngIf="isEditing | async" nbButton outline status="success" (click)="addParticipant()" class="m-3" style="width: 100%;"><nb-icon icon="plus"></nb-icon></button>
         </div>
       </div>
     </nb-card-body>
