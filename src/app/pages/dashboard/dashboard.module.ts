@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { NbButtonModule, NbCardModule, NbIconModule, NbInputModule, NbListModule, NbTooltipModule, NbUserModule } from '@nebular/theme';
+import { NbAlertModule, NbButtonModule, NbCardModule, NbIconModule, NbInputModule, NbListModule, NbTooltipModule, NbUserModule } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
 import { DashboardComponent } from './dashboard.component';
@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
     NbButtonModule,
     NbTooltipModule,
     NbInputModule,
+    NbAlertModule,
     FormsModule,
     ThemeModule,
   ],

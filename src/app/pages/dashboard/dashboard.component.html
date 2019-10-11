@@ -4,8 +4,9 @@
       <div class="row">
         <div class="col-12 d-flex justify-content-end">
           <button *ngIf="!(isEditing | async)" nbButton ghost status="primary" size="small" (click)="enterEditMode()" nbTooltip="Edit draw"><nb-icon icon="edit"></nb-icon></button>
+          <button *ngIf="isEditing | async" nbButton ghost status="success" size="small" (click)="addParticipant()" nbTooltip="Add participant"><nb-icon icon="plus"></nb-icon></button>
           <button *ngIf="isEditing | async" nbButton ghost status="primary" size="small" (click)="save()" nbTooltip="Save and generate"><nb-icon icon="save"></nb-icon></button>
-          <button nbButton ghost status="primary" size="small" (click)="generate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
+          <button nbButton ghost status="primary" size="small" [disabled]="isEditing | async" (click)="generate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
         </div>
       </div>
       <nb-list>
@@ -14,7 +15,7 @@
             <div class="col-md-5">
               <button nbButton outline status="primary" disabled class="btn-with-icon" style="width: 100%; display: flex; justify-content: start">
                 <nb-user *ngIf="!(isEditing | async)" [name]="participant.name" [showTitle]="false" size="medium"></nb-user>
-                <input *ngIf="isEditing | async" type="text" nbInput placeholder="Participant name" [(ngModel)]="participant.name" style="max-width: 100%;">
+                <input *ngIf="isEditing | async" type="text" nbInput placeholder="Participant name" [(ngModel)]="participant.name" style="max-width: 100%;" autofocus>
               </button>
               <button *ngIf="isEditing | async" nbButton ghost status="danger" size="small" (click)="removeParticipant(participant)" nbTooltip="Remove participant" class="position-absolute" style="right: 1em; top: 1em;"><nb-icon icon="trash"></nb-icon></button>
             </div>
@@ -29,9 +30,9 @@
           </div>
         </nb-list-item>
       </nb-list>
-      <div class="row d-flex justify-content-center">
-        <div class="col-xl-2 col-md-4 col-6">
-          <button *ngIf="isEditing | async" nbButton outline status="success" (click)="addParticipant()" class="m-3" style="width: 100%;"><nb-icon icon="plus"></nb-icon></button>
+      <div *ngIf="!hasEnoughParticipantsForDraw()" class="row d-flex justify-content-center">
+        <div class="col-xl-6">
+          <nb-alert outline="warning" class="mt-3 flex-row"><nb-icon icon="alert-triangle" status="warning"></nb-icon> <span> A draw requires at least 2 participants.</span></nb-alert>
         </div>
       </div>
     </nb-card-body>

@@ -76,6 +76,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.filterInvalidParticipants();
 
+    if (!this.hasEnoughParticipantsForDraw()) {
+      return;
+    }
+
     const shuffled = ArrayHelper.completeShuffle(this.participants);
     for (let i = 0; i < this.participants.length; i++) {
       this.participants[i].picked = shuffled[i].name;
@@ -88,6 +92,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   addParticipant(): void {
     this.participants.push(DashboardComponent.buildEmptyParticipant());
+  }
+
+  hasEnoughParticipantsForDraw(): boolean {
+    return this.participants.length > 1;
   }
 
   private clearPicks(): void {
