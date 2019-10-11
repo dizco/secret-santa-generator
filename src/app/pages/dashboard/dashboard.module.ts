@@ -7,7 +7,7 @@ import {
   NbInputModule,
   NbListModule,
   NbTooltipModule,
-  NbUserModule
+  NbUserModule,
 } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
