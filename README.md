@@ -1,7 +1,5 @@
 # secret-santa-generator [<img src="https://i.imgur.com/oMcxwZ0.png" alt="Eva Design System" height="20px" />](https://eva.design) [![Build Status](https://dev.azure.com/gabrielbourgault/Secret%20Santa/_apis/build/status/dizco.secret-santa-generator?branchName=master)](https://dev.azure.com/gabrielbourgault/Secret%20Santa/_build/latest?definitionId=11&branchName=master)
 
-# Secret santa generator based on Angular 8+ and <a href="https://github.com/akveo/nebular">Nebular</a>
-
 ### Demo
 
 <a target="_blank" href="https://secretsantagenerator.kiosoft.ca">Live Demo</a>
