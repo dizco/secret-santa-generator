@@ -86,5 +86,5 @@ This client is forked off of [ngx-admin](https://github.com/akveo/nebular) v4.0.
 
 <a target="_blank" href="http://akveo.com/ngx-admin/"><img src="https://i.imgur.com/iJu2YDF.png"/></a>
 
-For more information about UI components, visit the [Nebular repo](https://github.com/akveo/nebular). Further documentation about the intergation of Nebular with ngx-admin can be found [here](https://akveo.github.io/nebular/#/docs/installation/based-on-starter-kit-ngxadmin).
+For more information about UI components, visit the [Nebular repo](https://github.com/akveo/nebular). Further documentation about the intergation of Nebular with ngx-admin can be found [here](https://akveo.github.io/nebular/docs/guides/install-based-on-starter-kit#install-based-on-starter-kit).
 
