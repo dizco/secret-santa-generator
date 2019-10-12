@@ -15,7 +15,7 @@ stages:
   jobs:
   - job: ValidatePR
     displayName: Validate PR
-    #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')) #TODO: Update condition
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
     - template: templates/print-environment-variables.yaml
 
