@@ -34,6 +34,13 @@ stages:
         verbose: false
 
     - task: Npm@1
+      displayName: 'npm run lint:ci'
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: 'run lint:ci'
+
+    - task: Npm@1
       displayName: 'npm run build:prod'
       inputs:
         command: custom
