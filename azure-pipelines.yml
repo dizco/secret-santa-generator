@@ -34,10 +34,16 @@ stages:
         verbose: false
         customCommand: 'run build:prod'
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
+    - task: CopyFiles@2
       inputs:
-        PathtoPublish: dist
+        contents: 'dist/**'
+        targetFolder: $(Build.ArtifactStagingDirectory)
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: $(ArtifactName)'
+      inputs:
+        PathtoPublish: $(Build.ArtifactStagingDirectory)
+        ArtifactName: $(ArtifactName)
 
 - stage: Deploy
   displayName: Deploy
@@ -54,7 +60,8 @@ stages:
 
     - task: DownloadPipelineArtifact@2
       inputs:
-        artifactName: drop
+        artifactName: $(ArtifactName)
+        targetPath: $(Build.SourcesDirectory)/$(ArtifactName)
 
     - task: FtpUpload@1
       displayName: 'FTP Upload: $(ArtifactName)'
