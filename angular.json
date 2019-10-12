@@ -22,7 +22,7 @@
               "src/assets",
               "src/favicon.ico",
               "src/favicon.png",
-              { "glob": ".htaccess.example", "input": "src/", "output": "/"}
+              "src/server"
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.css",
