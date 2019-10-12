@@ -1,4 +1,4 @@
-tasks:
+steps:
 - task: Bash@3
   displayName: Print environment variables
   timeoutInMinutes: 1
