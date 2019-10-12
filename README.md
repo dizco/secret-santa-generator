@@ -64,7 +64,7 @@ npm run lint:ci
 
 Run the unit tests in a console with the following command :
 ```shell
-npm run test:singlerun
+npm run test:once
 ```
 
 To run tests in watch-mode :
@@ -75,6 +75,11 @@ npm run test
 To run tests with code coverage :
 ```shell
 npm run test:coverage
+```
+
+To run e2e tests :
+```shell
+npm run e2e
 ```
 
 ## How can I support developers?
