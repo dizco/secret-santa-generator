@@ -13,15 +13,11 @@ stages:
 - stage: Build
   displayName: Build
   jobs:
-  - job: Prod
-    displayName: Prod
+  - job: ValidatePR
+    displayName: Validate PR
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
-    - task: Bash@3
-      displayName: Print environment variables
-      timeoutInMinutes: 1
-      inputs:
-        targetType: inline
-        script: 'env | sort'
+    - template: templates/print-environment-variables.yaml
 
     - task: Npm@1
       displayName: npm ci
@@ -37,13 +33,6 @@ stages:
         customCommand: run lint:ci
 
     - task: Npm@1
-      displayName: npm run build:prod
-      timeoutInMinutes: 6
-      inputs:
-        command: custom
-        customCommand: run build:prod
-
-    - task: Npm@1
       displayName: npm run test:once
       timeoutInMinutes: 3
       inputs:
@@ -54,9 +43,9 @@ stages:
       displayName: Publish Test Results
       condition: succeededOrFailed()
       inputs:
+        testRunTitle: npm run test:once
         testResultsFormat: JUnit
         testResultsFiles: '**/TESTS-*.xml'
-
 
     - task: PublishCodeCoverageResults@1
       displayName: Publish Code Coverage Results
@@ -64,6 +53,39 @@ stages:
       inputs:
         codeCoverageTool: Cobertura
         summaryFileLocation: $(Build.SourcesDirectory)/coverage/cobertura-coverage.xml
+
+    - task: Npm@1
+      displayName: npm run e2e
+      inputs:
+        command: custom
+        customCommand: run e2e
+
+    - task: PublishTestResults@2
+      displayName: Publish E2E Test Results
+      condition: succeededOrFailed()
+      inputs:
+        searchFolder: $(System.DefaultWorkingDirectory)/e2e/test-results
+        testRunTitle: npm run e2e
+        testResultsFormat: JUnit
+        testResultsFiles: "**/junit*.xml"
+
+  - job: Prod
+    displayName: Prod
+    steps:
+    - template: templates/print-environment-variables.yaml
+
+    - task: Npm@1
+      displayName: npm ci
+      timeoutInMinutes: 3
+      inputs:
+        command: ci
+
+    - task: Npm@1
+      displayName: npm run build:prod
+      timeoutInMinutes: 6
+      inputs:
+        command: custom
+        customCommand: run build:prod
 
     - task: CopyFiles@2
       timeoutInMinutes: 2
@@ -85,12 +107,7 @@ stages:
   - job: Prod
     displayName: Prod
     steps:
-    - task: Bash@3
-      displayName: Print environment variables
-      timeoutInMinutes: 1
-      inputs:
-        targetType: inline
-        script: 'env | sort'
+    - template: templates/print-environment-variables.yaml
 
     - task: DownloadPipelineArtifact@2
       timeoutInMinutes: 2
