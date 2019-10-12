@@ -16,12 +16,12 @@ describe('Secret Santa Generator', () => {
     });
 
     it('has ngx-dashboard', () => {
-      let dashboard = element(by.css('.content ngx-dashboard'));
+      const dashboard = element(by.css('.content ngx-dashboard'));
       expect(dashboard.isPresent()).toBeTruthy();
     });
 
     it('has card', () => {
-      let dashboard = element(by.css('.content ngx-dashboard nb-card'));
+      const dashboard = element(by.css('.content ngx-dashboard nb-card'));
       expect(dashboard.isPresent()).toBeTruthy();
     });
   });
