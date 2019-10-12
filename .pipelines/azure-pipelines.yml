@@ -43,6 +43,7 @@ stages:
       displayName: Publish Test Results
       condition: succeededOrFailed()
       inputs:
+        testRunTitle: npm run test:once
         testResultsFormat: JUnit
         testResultsFiles: '**/TESTS-*.xml'
 
@@ -52,6 +53,21 @@ stages:
       inputs:
         codeCoverageTool: Cobertura
         summaryFileLocation: $(Build.SourcesDirectory)/coverage/cobertura-coverage.xml
+
+    - task: Npm@1
+      displayName: npm run e2e
+      inputs:
+        command: custom
+        customCommand: run e2e
+
+    - task: PublishTestResults@2
+      displayName: Publish E2E Test Results
+      condition: succeededOrFailed()
+      inputs:
+        searchFolder: $(System.DefaultWorkingDirectory)/e2e/test-results
+        testRunTitle: npm run e2e
+        testResultsFormat: JUnit
+        testResultsFiles: "**/junit*.xml"
 
   - job: Prod
     displayName: Prod
