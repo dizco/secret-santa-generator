@@ -27,6 +27,6 @@ exports.config = {
       project: 'e2e/tsconfig.e2e.json'
     });
 
-    jasmine.getEnv().addReporter(new SpecReporter({ acspec: { displayStacktrace: true } }));
+    jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
   }
 };
