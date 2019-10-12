@@ -42,6 +42,13 @@ stages:
         verbose: false
         customCommand: run build:prod
 
+    - task: Npm@1
+      displayName: npm run test:singlerun
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: run test:singlerun
+
     - task: CopyFiles@2
       inputs:
         sourceFolder: dist
