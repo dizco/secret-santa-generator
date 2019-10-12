@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
@@ -10,24 +5,23 @@ pool:
   vmImage: 'ubuntu-latest'
   demands: npm
 
+variables:
+  ArtifactName: drop
+  ArtifactPath: $(Pipeline.Workspace)/$(ArtifactName)
+
 stages:
-- stage:
+- stage: Build
   displayName: Build
   jobs:
-  - job:
-    displayName: Print stuff
+  - job: Prod
+    displayName: Prod
     steps:
-    - script: echo Hello, world!
-      displayName: 'Run a one-line script'
+    - task: Bash@3
+      displayName: Print environment variables
+      inputs:
+        targetType: inline
+        script: 'env | sort'
 
-    - script: |
-        echo Add other tasks to build, test, and deploy your project.
-        echo See https://aka.ms/yaml
-      displayName: 'Run a multi-line script'
-
-  - job:
-    displayName: Build prod
-    steps:
     - task: Npm@1
       displayName: 'npm install'
       inputs:
@@ -44,3 +38,33 @@ stages:
       displayName: 'Publish Artifact: drop'
       inputs:
         PathtoPublish: dist
+
+- stage: Deploy
+  displayName: Deploy
+  condition: and(succeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - job: Prod
+    displayName: Prod
+    steps:
+    - task: Bash@3
+      displayName: Print environment variables
+      inputs:
+        targetType: inline
+        script: 'env | sort'
+
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: drop
+
+    - task: FtpUpload@1
+      displayName: 'FTP Upload: $(ArtifactName)'
+      inputs:
+        credentialsOption: inputs
+        serverUrl: $(FtpServerUrl)
+        username: $(FtpUsername)
+        password: $(FtpPassword)
+        rootDirectory: $(ArtifactName)
+        remoteDirectory: /webapp/build/
+        clean: true
+        preservePaths: true
+        trustSSL: true
