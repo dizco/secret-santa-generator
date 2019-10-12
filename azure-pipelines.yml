@@ -36,7 +36,7 @@ stages:
 
     - task: CopyFiles@2
       inputs:
-        contents: 'dist/**'
+        sourceFolder: dist
         targetFolder: $(Build.ArtifactStagingDirectory)
 
     - task: PublishBuildArtifacts@1
