@@ -2,7 +2,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
   demands: npm
 
 variables:
@@ -23,23 +23,24 @@ stages:
         script: 'env | sort'
 
     - task: Npm@1
-      displayName: 'npm install'
+      displayName: npm ci
       inputs:
+        command: ci
         verbose: false
 
     - task: Npm@1
-      displayName: 'npm run lint:ci'
+      displayName: npm run lint:ci
       inputs:
         command: custom
         verbose: false
-        customCommand: 'run lint:ci'
+        customCommand: run lint:ci
 
     - task: Npm@1
-      displayName: 'npm run build:prod'
+      displayName: npm run build:prod
       inputs:
         command: custom
         verbose: false
-        customCommand: 'run build:prod'
+        customCommand: run build:prod
 
     - task: CopyFiles@2
       inputs:
@@ -54,7 +55,7 @@ stages:
 
 - stage: Deploy
   displayName: Deploy
-#  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - job: Prod
     displayName: Prod
