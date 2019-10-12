@@ -1,71 +1,92 @@
-# ngx-admin [<img src="https://i.imgur.com/oMcxwZ0.png" alt="Eva Design System" height="20px" />](https://eva.design) [![Build Status](https://dev.azure.com/gabrielbourgault/Secret%20Santa/_apis/build/status/dizco.secret-santa-generator?branchName=master)](https://dev.azure.com/gabrielbourgault/Secret%20Santa/_build/latest?definitionId=11&branchName=master)
+# secret-santa-generator [<img src="https://i.imgur.com/oMcxwZ0.png" alt="Eva Design System" height="20px" />](https://eva.design) [![Build Status](https://dev.azure.com/gabrielbourgault/Secret%20Santa/_apis/build/status/dizco.secret-santa-generator?branchName=master)](https://dev.azure.com/gabrielbourgault/Secret%20Santa/_build/latest?definitionId=11&branchName=master)
 
-[Who uses ngx-admin?](https://github.com/akveo/ngx-admin/issues/1645)| [Documentation](https://akveo.github.io/ngx-admin/?utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes) | [Installation Guidelines](https://akveo.github.io/ngx-admin/docs/getting-started/what-is-ngxadmin?utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes)
-
-# Admin template based on Angular 8+ and <a href="https://github.com/akveo/nebular">Nebular</a>
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?theme=corporate&utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=main_pic"><img src="https://i.imgur.com/mFdqvgG.png"/></a>
-
-### Backend Integration Bundles
-Easy way to integrate ngx-admin with .NET, Node.js, Java or PHP. [Checkout our Store](https://store.akveo.com/?utm_source=github&utm_medium=ngx_admin_readme) for ready to use Backend Bundles.
-
-
-### With 3 stunning visual themes
-
-
-
-#### Default
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?theme=default&utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes"><img src="https://i.imgur.com/Kn3xDKQ.png"/></a>
-
-#### Dark
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?theme=dark&utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes"><img src="https://i.imgur.com/FAn5iXY.png"/></a>
-
-#### Cosmic
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?theme=cosmic&utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes"><img src="https://i.imgur.com/iJu2YDF.png"/></a>
-
-#### Corporate
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?theme=corporate&utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes"><img src="https://i.imgur.com/GpUt6NW.png"/></a>
-
-### What's included:
-
-- Angular 8+ & Typescript
-- Bootstrap 4+ & SCSS
-- Responsive layout
-- RTL support
-- High resolution
-- Flexibly configurable themes with **hot-reload** (3 themes included)
-- Authentication module with multiple providers
-- 40+ Angular Components
-- 60+ Usage Examples
+# Secret santa generator based on Angular 8+ and <a href="https://github.com/akveo/nebular">Nebular</a>
 
 ### Demo
 
-<a target="_blank" href="http://akveo.com/ngx-admin/">Live Demo</a>
+<a target="_blank" href="https://secretsantagenerator.kiosoft.ca">Live Demo</a>
 
-## Documentation
-This template is using [Nebular](https://github.com/akveo/nebular) modules set, [here you can find documentation and other useful articles](https://akveo.github.io/nebular/docs/guides/install-based-on-starter-kit).
+## Install
 
-### Empty starter kit
-Don't need all the pages and modules and just looking for an empty starter kit for your next project? Check out our [starter-kit branch](https://github.com/akveo/ngx-admin/tree/starter-kit).
+1. [Install node](https://nodejs.org/en/), if not already installed. The application has been tested with node 10.16.3 and npm 6.4.1.
 
-## BrowserStack
-This project runs its tests on multiple desktop and mobile browsers using [BrowserStack](http://www.browserstack.com).
+2. Clone this repository 
+    ```shell
+    git clone https://github.com/dizco/secret-santa-generator.git
+    ```
 
-<img src="https://cloud.githubusercontent.com/assets/131406/22254249/534d889e-e254-11e6-8427-a759fb23b7bd.png" height="40" />
+3. Navigate to the project folder
+    ```shell
+    cd secret-santa-generator
+    ```
 
-## More from Akveo
+4. Install dependencies
+    ```shell
+    npm install
+    ```
 
-- [Eva Icons](https://github.com/akveo/eva-icons) - 480+ beautiful Open Source icons
-- [Nebular](https://github.com/akveo/nebular) - Angular Components, Auth and Security
+## Running
 
-### How can I support developers?
-- Star our GitHub repo :star:
+To run the application, navigate to the project folder and execute the following steps :
+
+1. Open the file `environments/environment.ts`, and edit the values according to your setup.
+
+2. Run!
+    ```shell
+    npm start
+    ```
+
+## Building :construction_worker:
+
+To run development builds :
+```shell
+npm run build
+```
+
+To run production builds :
+```shell
+npm run build:prod
+```
+
+:rocket: Note: To manually deploy to shared hosting, copy the files from the `dist` folder to the root folder of the application. Continuous deployment is hooked on `master` builds using Azure Pipelines and ftp upload.
+
+## Linting
+
+To run tslint :
+```shell
+npm run lint
+```
+
+To run more extensive lint including tslint as well as stylelint (this command is hooked on prepush as well) :
+```shell
+npm run lint:ci
+```
+
+## Testing :heart_eyes:
+
+Run the unit tests in a console with the following command :
+```shell
+npm run test:singlerun
+```
+
+To run tests in watch-mode :
+```shell
+npm run test
+```
+
+To run tests with code coverage :
+```shell
+npm run test:coverage
+```
+
+## How can I support developers?
+- Star this GitHub repo :star:
 - Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
-- Follow us on [Twitter](https://twitter.com/akveo_inc) :feet:
-- Like our page on [Facebook](https://www.facebook.com/akveo/) :thumbsup:
 
-### Looking for engineering services? 
-Visit [our homepage](http://akveo.com/) or simply leave us a message to [contact@akveo.com](mailto:contact@akveo.com). We will be happy to work with you!
+## ngx-admin
+This client is forked off of [ngx-admin](https://github.com/akveo/nebular) v4.0.1 :heart:.
 
-### From Developers
-Made with :heart: by [Akveo team](http://akveo.com/). Follow us on [Twitter](https://twitter.com/akveo_inc) to get the latest news first!
-We're always happy to receive your feedback!
+<a target="_blank" href="http://akveo.com/ngx-admin/"><img src="https://i.imgur.com/iJu2YDF.png"/></a>
+
+For more information about UI components, visit the [Nebular repo](https://github.com/akveo/nebular). Further documentation about the intergation of Nebular with ngx-admin can be found [here](https://akveo.github.io/nebular/#/docs/installation/based-on-starter-kit-ngxadmin).
+
