@@ -39,7 +39,7 @@ export class ArrayHelper {
       }
     }
 
-    return array;
+    return shuffled;
   }
 
   /**
