@@ -18,37 +18,62 @@ stages:
     steps:
     - task: Bash@3
       displayName: Print environment variables
+      timeoutInMinutes: 1
       inputs:
         targetType: inline
         script: 'env | sort'
 
     - task: Npm@1
       displayName: npm ci
+      timeoutInMinutes: 3
       inputs:
         command: ci
-        verbose: false
 
     - task: Npm@1
       displayName: npm run lint:ci
+      timeoutInMinutes: 3
       inputs:
         command: custom
-        verbose: false
         customCommand: run lint:ci
 
     - task: Npm@1
       displayName: npm run build:prod
+      timeoutInMinutes: 6
       inputs:
         command: custom
-        verbose: false
         customCommand: run build:prod
 
+    - task: Npm@1
+      displayName: npm run test:once
+      timeoutInMinutes: 3
+      inputs:
+        command: custom
+        customCommand: run test:once
+
+    - task: PublishTestResults@2
+      displayName: Publish Test Results
+      condition: succeededOrFailed()
+      inputs:
+        testResultsFormat: JUnit
+        testResultsFiles: '**/TESTS-*.xml'
+
+
+    - task: PublishCodeCoverageResults@1
+      displayName: Publish Code Coverage Results
+      condition: succeededOrFailed()
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: $(Build.SourcesDirectory)/coverage/cobertura-coverage.xml
+
     - task: CopyFiles@2
+      timeoutInMinutes: 2
       inputs:
         sourceFolder: dist
         targetFolder: $(Build.ArtifactStagingDirectory)
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: $(ArtifactName)'
+      timeoutInMinutes: 2
       inputs:
         PathtoPublish: $(Build.ArtifactStagingDirectory)
         ArtifactName: $(ArtifactName)
@@ -62,17 +87,20 @@ stages:
     steps:
     - task: Bash@3
       displayName: Print environment variables
+      timeoutInMinutes: 1
       inputs:
         targetType: inline
         script: 'env | sort'
 
     - task: DownloadPipelineArtifact@2
+      timeoutInMinutes: 2
       inputs:
         artifactName: $(ArtifactName)
         targetPath: $(Build.SourcesDirectory)/$(ArtifactName)
 
     - task: FtpUpload@1
       displayName: 'FTP Upload: $(ArtifactName)'
+      timeoutInMinutes: 5
       inputs:
         credentialsOption: inputs
         serverUrl: $(FtpServerUrl)
