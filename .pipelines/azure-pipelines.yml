@@ -50,6 +50,21 @@ stages:
         command: custom
         customCommand: run test:once
 
+    - task: PublishTestResults@2
+      displayName: Publish Test Results
+      condition: succeededOrFailed()
+      inputs:
+        testResultsFormat: JUnit
+        testResultsFiles: '**/TESTS-*.xml'
+
+
+    - task: PublishCodeCoverageResults@1
+      displayName: Publish Code Coverage Results
+      condition: succeededOrFailed()
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: $(Build.SourcesDirectory)/coverage/cobertura-coverage.xml
+
     - task: CopyFiles@2
       timeoutInMinutes: 2
       inputs:
