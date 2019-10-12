@@ -21,7 +21,8 @@
             "assets": [
               "src/assets",
               "src/favicon.ico",
-              "src/favicon.png"
+              "src/favicon.png",
+              { "glob": "**/*", "input": "src/server/", "output": "/"}
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.css",

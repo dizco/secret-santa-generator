@@ -1,0 +1,85 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+  demands: npm
+
+variables:
+  ArtifactName: drop
+  ArtifactPath: $(Pipeline.Workspace)/$(ArtifactName)
+
+stages:
+- stage: Build
+  displayName: Build
+  jobs:
+  - job: Prod
+    displayName: Prod
+    steps:
+    - task: Bash@3
+      displayName: Print environment variables
+      inputs:
+        targetType: inline
+        script: 'env | sort'
+
+    - task: Npm@1
+      displayName: npm ci
+      inputs:
+        command: ci
+        verbose: false
+
+    - task: Npm@1
+      displayName: npm run lint:ci
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: run lint:ci
+
+    - task: Npm@1
+      displayName: npm run build:prod
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: run build:prod
+
+    - task: CopyFiles@2
+      inputs:
+        sourceFolder: dist
+        targetFolder: $(Build.ArtifactStagingDirectory)
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: $(ArtifactName)'
+      inputs:
+        PathtoPublish: $(Build.ArtifactStagingDirectory)
+        ArtifactName: $(ArtifactName)
+
+- stage: Deploy
+  displayName: Deploy
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - job: Prod
+    displayName: Prod
+    steps:
+    - task: Bash@3
+      displayName: Print environment variables
+      inputs:
+        targetType: inline
+        script: 'env | sort'
+
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifactName: $(ArtifactName)
+        targetPath: $(Build.SourcesDirectory)/$(ArtifactName)
+
+    - task: FtpUpload@1
+      displayName: 'FTP Upload: $(ArtifactName)'
+      inputs:
+        credentialsOption: inputs
+        serverUrl: $(FtpServerUrl)
+        username: $(FtpUsername)
+        password: $(FtpPassword)
+        rootDirectory: $(ArtifactName)
+        remoteDirectory: /webapp/build/
+        clean: true
+        preservePaths: true
+        trustSSL: true

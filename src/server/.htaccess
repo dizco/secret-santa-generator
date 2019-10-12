@@ -1,0 +1,9 @@
+# Routes all traffic to the front index.html file
+# See https://github.com/angular/angular/issues/8788#issuecomment-249249892
+
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [NC,L]
+RewriteRule ^(.*) /index.html [NC,L]

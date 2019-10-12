@@ -1,0 +1,1 @@
+The `server` folder is meant to be copy-pasted on the deployment server. This is especially useful for `.htaccess` or `web.config` files. The copy operation is defined in the `angular.json` configuration file.
