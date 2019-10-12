@@ -29,17 +29,13 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['Chrome'],
     customLaunchers: {
-      Chrome_travis_ci: {
+      Chrome_ci: {
         base: 'ChromeHeadless',
         flags: ['--no-sandbox']
       }
     },
     singleRun: false
   };
-
-  if (process.env.TRAVIS || process.env.AZUREDEVOPS) {
-    configuration.browsers = ['Chrome_travis_ci'];
-  }
 
   config.set(configuration);
 };

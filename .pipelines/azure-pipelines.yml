@@ -44,13 +44,11 @@ stages:
         customCommand: run build:prod
 
     - task: Npm@1
-      displayName: npm run test:singlerun
-      env:
-        AZUREDEVOPS: true
+      displayName: npm run test:once
       timeoutInMinutes: 3
       inputs:
         command: custom
-        customCommand: run test:singlerun
+        customCommand: run test:once
 
     - task: CopyFiles@2
       timeoutInMinutes: 2
