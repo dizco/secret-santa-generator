@@ -13,15 +13,11 @@ stages:
 - stage: Build
   displayName: Build
   jobs:
-  - job: Prod
-    displayName: Prod
+  - job: ValidatePR
+    displayName: Validate PR
+    #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')) #TODO: Update condition
     steps:
-    - task: Bash@3
-      displayName: Print environment variables
-      timeoutInMinutes: 1
-      inputs:
-        targetType: inline
-        script: 'env | sort'
+    - template: templates/print-environment-variables.yaml
 
     - task: Npm@1
       displayName: npm ci
@@ -37,13 +33,6 @@ stages:
         customCommand: run lint:ci
 
     - task: Npm@1
-      displayName: npm run build:prod
-      timeoutInMinutes: 6
-      inputs:
-        command: custom
-        customCommand: run build:prod
-
-    - task: Npm@1
       displayName: npm run test:once
       timeoutInMinutes: 3
       inputs:
@@ -57,13 +46,30 @@ stages:
         testResultsFormat: JUnit
         testResultsFiles: '**/TESTS-*.xml'
 
-
     - task: PublishCodeCoverageResults@1
       displayName: Publish Code Coverage Results
       condition: succeededOrFailed()
       inputs:
         codeCoverageTool: Cobertura
         summaryFileLocation: $(Build.SourcesDirectory)/coverage/cobertura-coverage.xml
+
+  - job: Prod
+    displayName: Prod
+    steps:
+    - template: templates/print-environment-variables.yaml
+
+    - task: Npm@1
+      displayName: npm ci
+      timeoutInMinutes: 3
+      inputs:
+        command: ci
+
+    - task: Npm@1
+      displayName: npm run build:prod
+      timeoutInMinutes: 6
+      inputs:
+        command: custom
+        customCommand: run build:prod
 
     - task: CopyFiles@2
       timeoutInMinutes: 2
@@ -85,12 +91,7 @@ stages:
   - job: Prod
     displayName: Prod
     steps:
-    - task: Bash@3
-      displayName: Print environment variables
-      timeoutInMinutes: 1
-      inputs:
-        targetType: inline
-        script: 'env | sort'
+    - template: templates/print-environment-variables.yaml
 
     - task: DownloadPipelineArtifact@2
       timeoutInMinutes: 2

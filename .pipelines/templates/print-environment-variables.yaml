@@ -1,0 +1,7 @@
+tasks:
+- task: Bash@3
+  displayName: Print environment variables
+  timeoutInMinutes: 1
+  inputs:
+    targetType: inline
+    script: 'env | sort'
