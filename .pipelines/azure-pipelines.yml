@@ -44,6 +44,8 @@ stages:
 
     - task: Npm@1
       displayName: npm run test:singlerun
+      env:
+        AZUREDEVOPS: true
       inputs:
         command: custom
         verbose: false

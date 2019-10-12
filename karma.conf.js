@@ -30,14 +30,14 @@ module.exports = function (config) {
     browsers: ['Chrome'],
     customLaunchers: {
       Chrome_travis_ci: {
-        base: 'Chrome',
+        base: 'ChromeHeadless',
         flags: ['--no-sandbox']
       }
     },
     singleRun: false
   };
 
-  if (process.env.TRAVIS) {
+  if (process.env.TRAVIS || process.env.AZUREDEVOPS) {
     configuration.browsers = ['Chrome_travis_ci'];
   }
 
