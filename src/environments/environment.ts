@@ -10,4 +10,9 @@
 
 export const environment = {
   production: false,
+  analytics: {
+    enabled: false,
+    trackingId: 'UA-44227081-15',
+  },
+  appName: 'secret-santa-generator',
 };
