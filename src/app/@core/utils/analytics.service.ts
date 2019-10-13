@@ -1,32 +1,63 @@
-import { Injectable } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { Location } from '@angular/common';
-import { filter } from 'rxjs/operators';
+import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { NB_WINDOW } from '@nebular/theme';
+import { Gtag, GtagEvent, GtagPageview } from 'angular-gtag';
+import { environment } from '../../../environments/environment';
 
-declare const ga: any;
+export const enum AnalyticsCategories {
+  Customization = 'customization',
+  Search = 'search',
+}
+
+declare var gtag: any;
+declare var google_tag_manager: any;
 
 @Injectable()
-export class AnalyticsService {
-  private enabled: boolean;
+export class AnalyticsService implements OnDestroy {
+  private readonly enabled = false;
+  private alive = true;
 
-  constructor(private location: Location, private router: Router) {
-    this.enabled = false;
+  constructor(@Inject(NB_WINDOW) private window,
+              private gtagService: Gtag) {
+    this.enabled = environment.analytics.enabled;
+
+    //See https://developers.google.com/analytics/devguides/collection/gtagjs/user-opt-out
+    this.window[`ga-disable-${environment.analytics.trackingId}`] = !this.enabled;
+
+    this.setAppName();
   }
 
-  trackPageViews() {
+  private setAppName(): void {
+    //TODO: Bug in angular-gtag library, can't use the config function because it completely overwrites the parameters... params={}
+    /*this.gtagService.config({
+      app_name: environment.appName,
+    });*/
+
+    this.window.gtag('config', environment.analytics.trackingId, {
+      app_name: environment.appName,
+    });
+  }
+
+  private isGoogleTagManagerAvailable(): boolean {
+    return !!this.window.google_tag_manager;
+  }
+
+  ngOnDestroy(): void {
+    this.alive = false;
+  }
+
+  trackPageView(params?: GtagPageview): void {
+    console.log('track page view', params);
+
     if (this.enabled) {
-      this.router.events.pipe(
-        filter((event) => event instanceof NavigationEnd),
-      )
-        .subscribe(() => {
-          ga('send', {hitType: 'pageview', page: this.location.path()});
-        });
+      this.gtagService.pageview(params);
     }
   }
 
-  trackEvent(eventName: string) {
+  trackEvent(name: string, params?: GtagEvent): void {
+    console.log('track event', name, params);
+
     if (this.enabled) {
-      ga('send', 'event', eventName);
+      this.gtagService.event(name, params);
     }
   }
 }
