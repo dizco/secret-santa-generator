@@ -15,7 +15,7 @@ declare var google_tag_manager: any;
 
 @Injectable()
 export class AnalyticsService {
-  private readonly enabled = false;
+  private readonly enabled: boolean = false;
 
   constructor(@Inject(NB_WINDOW) private window,
               private gtagService: Gtag) {
