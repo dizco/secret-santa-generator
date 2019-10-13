@@ -46,16 +46,12 @@ export class AnalyticsService implements OnDestroy {
   }
 
   trackPageView(params?: GtagPageview): void {
-    console.log('track page view', params);
-
     if (this.enabled) {
       this.gtagService.pageview(params);
     }
   }
 
   trackEvent(name: string, params?: GtagEvent): void {
-    console.log('track event', name, params);
-
     if (this.enabled) {
       this.gtagService.event(name, params);
     }
