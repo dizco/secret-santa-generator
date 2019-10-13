@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map, takeWhile } from 'rxjs/operators';
+import { filter, map, takeWhile, tap } from 'rxjs/operators';
+import { AnalyticsService } from '../../@core/utils';
+import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 
 interface Participant {
   name: string;
@@ -49,13 +51,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     },
   ];
 
+  constructor(private analyticsService: AnalyticsService) {}
+
   ngOnInit(): void {
     this.isEditing.pipe(
       takeWhile(() => this.alive),
       filter((value) => !value), // Only when isEditing becomes false
-    ).subscribe({
-      next: (_) => this.generate(),
-    });
+    ).subscribe(() => {
+      this.generate();
+    })
   }
 
   ngOnDestroy(): void {
@@ -65,18 +69,35 @@ export class DashboardComponent implements OnInit, OnDestroy {
   enterEditMode(): void {
     this.clearPicks();
     this.isEditingSubject.next(true);
+
+    this.analyticsService.trackEvent('enterEditMode', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
   }
 
   save(): void {
     this.isEditingSubject.next(false);
+
+    this.analyticsService.trackEvent('saveParticipants', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
   }
 
   generate(): void {
+    this.analyticsService.trackEvent('generateDraw', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
+
     this.clearPicks();
 
     this.filterInvalidParticipants();
 
     if (!this.hasEnoughParticipantsForDraw()) {
+      this.analyticsService.trackEvent('invalidDraw', {
+        event_category: AnalyticsCategories.SecretSantaGenerator,
+        event_label: 'Not enough participants',
+      });
+
       return;
     }
 
@@ -88,10 +109,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   removeParticipant(participant: Participant): void {
     this.participants = this.participants.filter((p) => p !== participant);
+
+    this.analyticsService.trackEvent('removeParticipant', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
   }
 
   addParticipant(): void {
     this.participants.push(DashboardComponent.buildEmptyParticipant());
+
+    this.analyticsService.trackEvent('addParticipant', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
   }
 
   hasEnoughParticipantsForDraw(): boolean {

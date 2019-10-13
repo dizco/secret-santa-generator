@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 
 export const enum AnalyticsCategories {
   Customization = 'customization',
-  Search = 'search',
+  SecretSantaGenerator = 'secretsantagenerator',
 }
 
 declare var gtag: any;
