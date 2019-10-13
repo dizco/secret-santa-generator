@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map, takeWhile, tap } from 'rxjs/operators';
+import { filter, map, takeWhile } from 'rxjs/operators';
 import { AnalyticsService } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 
@@ -59,7 +59,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       filter((value) => !value), // Only when isEditing becomes false
     ).subscribe(() => {
       this.generate();
-    })
+    });
   }
 
   ngOnDestroy(): void {

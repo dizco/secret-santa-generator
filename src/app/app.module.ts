@@ -46,7 +46,7 @@ import { environment } from '../environments/environment';
     GtagModule.forRoot({
       trackingId: environment.analytics.trackingId,
       trackPageviews: false,
-    })
+    }),
   ],
   bootstrap: [AppComponent],
 })

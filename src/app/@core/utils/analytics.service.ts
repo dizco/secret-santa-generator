@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { NB_WINDOW } from '@nebular/theme';
 import { Gtag, GtagEvent, GtagPageview } from 'angular-gtag';
 import { environment } from '../../../environments/environment';
@@ -8,26 +8,27 @@ export const enum AnalyticsCategories {
   SecretSantaGenerator = 'secretsantagenerator',
 }
 
+// tslint:disable
 declare var gtag: any;
 declare var google_tag_manager: any;
+// tslint:enable
 
 @Injectable()
-export class AnalyticsService implements OnDestroy {
+export class AnalyticsService {
   private readonly enabled = false;
-  private alive = true;
 
   constructor(@Inject(NB_WINDOW) private window,
               private gtagService: Gtag) {
     this.enabled = environment.analytics.enabled;
 
-    //See https://developers.google.com/analytics/devguides/collection/gtagjs/user-opt-out
+    // See https://developers.google.com/analytics/devguides/collection/gtagjs/user-opt-out
     this.window[`ga-disable-${environment.analytics.trackingId}`] = !this.enabled;
 
     this.setAppName();
   }
 
   private setAppName(): void {
-    //TODO: Bug in angular-gtag library, can't use the config function because it completely overwrites the parameters... params={}
+    // TODO: Bug in angular-gtag library, can't use the config function because it completely overwrites the parameters... params={}
     /*this.gtagService.config({
       app_name: environment.appName,
     });*/
@@ -37,12 +38,9 @@ export class AnalyticsService implements OnDestroy {
     });
   }
 
+  // tslint:disable-next-line
   private isGoogleTagManagerAvailable(): boolean {
     return !!this.window.google_tag_manager;
-  }
-
-  ngOnDestroy(): void {
-    this.alive = false;
   }
 
   trackPageView(params?: GtagPageview): void {

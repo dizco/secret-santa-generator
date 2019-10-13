@@ -5,7 +5,7 @@
  */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AnalyticsService } from './@core/utils';
-import { NbLayoutDirectionService, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
+import { NbLayoutDirectionService, NbSidebarService, NbThemeService } from '@nebular/theme';
 import { filter, map, skip, takeWhile } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
@@ -21,7 +21,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(private analyticsService: AnalyticsService,
               private sidebarService: NbSidebarService,
-              private menuService: NbMenuService,
               private themeService: NbThemeService,
               private directionService: NbLayoutDirectionService,
               private location: Location,
