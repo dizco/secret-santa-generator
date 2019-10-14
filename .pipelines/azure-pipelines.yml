@@ -8,7 +8,7 @@ pool:
 variables:
   ArtifactName: drop
   ArtifactPath: $(Pipeline.Workspace)/$(ArtifactName)
-  RunValidation: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+  RunValidation: ${{ eq(variables['Build.Reason'], 'PullRequest') }}
 
 stages:
 - stage: Build
@@ -16,7 +16,7 @@ stages:
   jobs:
   - job: ValidatePR
     displayName: Validate PR
-    condition: $(RunValidation)
+    condition: and(succeeded(), variables['RunValidation'])
     steps:
     - template: templates/print-environment-variables.yaml
 
