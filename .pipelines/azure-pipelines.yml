@@ -16,7 +16,7 @@ stages:
   jobs:
   - job: ValidatePR
     displayName: Validate PR
-    condition: and(succeeded(), variables['RunValidation'])
+    condition: and(succeeded(), eq(variables['RunValidation'], 'True'))
     steps:
     - template: templates/print-environment-variables.yaml
 
