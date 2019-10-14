@@ -83,28 +83,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  generate(): void {
-    this.analyticsService.trackEvent('generateDraw', {
+  regenerate(): void {
+    this.generate();
+
+    this.analyticsService.trackEvent('regenerateDraw', {
       event_category: AnalyticsCategories.SecretSantaGenerator,
     });
-
-    this.clearPicks();
-
-    this.filterInvalidParticipants();
-
-    if (!this.hasEnoughParticipantsForDraw()) {
-      this.analyticsService.trackEvent('invalidDraw', {
-        event_category: AnalyticsCategories.SecretSantaGenerator,
-        event_label: 'Not enough participants',
-      });
-
-      return;
-    }
-
-    const shuffled = ArrayHelper.completeShuffle(this.participants);
-    for (let i = 0; i < this.participants.length; i++) {
-      this.participants[i].picked = shuffled[i].name;
-    }
   }
 
   removeParticipant(participant: Participant): void {
@@ -125,6 +109,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   hasEnoughParticipantsForDraw(): boolean {
     return this.participants.length > 1;
+  }
+
+  private generate(): void {
+    this.clearPicks();
+
+    this.filterInvalidParticipants();
+
+    if (!this.hasEnoughParticipantsForDraw()) {
+      this.analyticsService.trackEvent('invalidDraw', {
+        event_category: AnalyticsCategories.SecretSantaGenerator,
+        event_label: 'Not enough participants',
+      });
+
+      return;
+    }
+
+    const shuffled = ArrayHelper.completeShuffle(this.participants);
+    for (let i = 0; i < this.participants.length; i++) {
+      this.participants[i].picked = shuffled[i].name;
+    }
   }
 
   private clearPicks(): void {
