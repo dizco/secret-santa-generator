@@ -7,7 +7,7 @@
             <button *ngIf="!(isEditing | async)" nbButton ghost status="primary" size="small" (click)="enterEditMode()" nbTooltip="Edit draw"><nb-icon icon="edit"></nb-icon></button>
             <button *ngIf="isEditing | async" nbButton ghost status="success" size="small" (click)="addParticipant()" nbTooltip="Add participant"><nb-icon icon="plus"></nb-icon></button>
             <button *ngIf="isEditing | async" nbButton ghost status="primary" size="small" (click)="save()" nbTooltip="Save and generate"><nb-icon icon="save"></nb-icon></button>
-            <button nbButton ghost status="primary" size="small" [disabled]="isEditing | async" (click)="generate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
+            <button nbButton ghost status="primary" size="small" [disabled]="isEditing | async" (click)="regenerate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
           </div>
         </div>
         <nb-list>
