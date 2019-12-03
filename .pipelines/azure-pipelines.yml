@@ -103,6 +103,8 @@ stages:
 - stage: Deploy
   displayName: Deploy
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  variables:
+  - group: Production variables
   jobs:
   - job: Prod
     displayName: Prod
