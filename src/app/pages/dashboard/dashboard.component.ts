@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map, takeWhile } from 'rxjs/operators';
+import { BehaviorSubject, iif, Observable, of } from 'rxjs';
+import { filter, map, mergeMap, switchMap, take, takeWhile } from 'rxjs/operators';
 import { AnalyticsService } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 
@@ -9,6 +9,12 @@ interface Participant {
   name: string;
   email: string;
   picked: string;
+}
+
+enum ResultsState {
+  Hidden,
+  Editing,
+  Generated,
 }
 
 @Component({
@@ -19,12 +25,19 @@ interface Participant {
 export class DashboardComponent implements OnInit, OnDestroy {
   private alive = true;
 
-  private isEditingSubject = new BehaviorSubject<boolean>(true);
+  private resultsViewEnabledSubject = new BehaviorSubject<boolean>(false);
+  resultsViewEnabled: Observable<boolean> = this.resultsViewEnabledSubject.pipe(
+    takeWhile(() => this.alive),
+    map(v => v),
+  );
 
+  private isEditingSubject = new BehaviorSubject<boolean>(true);
   isEditing: Observable<boolean> = this.isEditingSubject.pipe(
     takeWhile(() => this.alive),
     map(v => v),
   );
+
+  resultsState = ResultsState;
 
   participants: Participant[] = [
     {
@@ -99,6 +112,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  enableResultsView(): void {
+    this.resultsViewEnabledSubject.next(true);
+    this.analyticsService.trackEvent('enableResultsView', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
+  }
+
+  disableResultsView(): void {
+    this.resultsViewEnabledSubject.next(false);
+    this.analyticsService.trackEvent('enableResultsView', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
+  }
+
   removeParticipant(participant: Participant): void {
     this.participants = this.participants.filter((p) => p !== participant);
 
@@ -115,8 +142,46 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  sendResults(): void {
+    this.generate();
+
+    this.analyticsService.trackEvent('sendResults', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
+  }
+
   hasEnoughParticipantsForDraw(): boolean {
     return this.participants.length > 1;
+  }
+
+  allParticipantsHaveAnEmail(): boolean {
+    return this.participants.every((participant) => {
+      return participant.email !== '';
+    });
+  }
+
+  canEmailResults(): Observable<boolean> {
+    return this.isEditing.pipe(
+      take(1),
+      map((isEditing: boolean) => {
+        return !isEditing
+          && this.hasEnoughParticipantsForDraw()
+          && this.allParticipantsHaveAnEmail();
+      }),
+    );
+  }
+
+  getResultsState(): Observable<ResultsState> {
+    return this.resultsViewEnabled.pipe(
+      mergeMap(enabled =>
+        iif(() => enabled,
+          this.isEditing.pipe(
+            map(isEditing => isEditing ? ResultsState.Editing : ResultsState.Generated),
+          ),
+          of(ResultsState.Hidden),
+        ),
+      ),
+    );
   }
 
   private generate(): void {
@@ -147,7 +212,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private filterInvalidParticipants(): void {
     this.participants = this.participants.filter((participant) => {
-      return participant.name !== '';
+      return participant.name !== '' || participant.email !== '';
     });
   }
 
