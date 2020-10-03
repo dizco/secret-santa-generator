@@ -5,7 +5,7 @@ import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 
 import { throwIfAlreadyLoaded } from './module-import-guard';
-import { AnalyticsService } from './utils';
+import { AnalyticsService, MailService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
 
 const socialLinks = [
@@ -75,6 +75,7 @@ export const NB_CORE_PROVIDERS = [
     provide: NbRoleProvider, useClass: NbSimpleRoleProvider,
   },
   AnalyticsService,
+  MailService,
 ];
 
 @NgModule({

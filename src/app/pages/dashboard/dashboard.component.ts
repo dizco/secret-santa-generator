@@ -1,14 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
-import { BehaviorSubject, iif, Observable, of } from 'rxjs';
-import { filter, map, mergeMap, take, takeWhile } from 'rxjs/operators';
-import { AnalyticsService } from '../../@core/utils';
+import { BehaviorSubject, forkJoin, iif, Observable, of } from 'rxjs';
+import { filter, map, mergeMap, take, takeWhile, tap } from 'rxjs/operators';
+import { AnalyticsService, MailService } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
+import { MailResponse } from '../../@core/utils/mail.service';
 
 interface Participant {
   name: string;
   email: string;
-  picked: string;
+  picked?: Participant;
 }
 
 enum ResultsState {
@@ -43,36 +44,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
     {
       name: 'Nick',
       email: 'nick@example.com',
-      picked: '',
     },
     {
       name: 'Eva',
       email: 'eva@example.com',
-      picked: '',
     },
     {
       name: 'Jack',
       email: 'jack@example.com',
-      picked: '',
     },
     {
       name: 'Lee',
       email: 'lee@example.com',
-      picked: '',
     },
     {
       name: 'Alan',
       email: 'alan@example.com',
-      picked: '',
     },
     {
       name: 'Kate',
       email: 'kate@example.com',
-      picked: '',
     },
   ];
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService, private mailService: MailService) {}
 
   ngOnInit(): void {
     this.isEditing.pipe(
@@ -143,11 +138,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   sendResults(): void {
-    this.generate();
-
     this.analyticsService.trackEvent('sendResults', {
       event_category: AnalyticsCategories.SecretSantaGenerator,
     });
+
+    const tasks: Observable<MailResponse>[] = [];
+    this.participants.forEach(participant => {
+      tasks.push(this.mailService.send({
+        to: participant.email,
+        from: 'Secret Santa Generator',
+        subject: 'Your draw pick',
+        body: `You have selected: ${participant.picked.name} (${participant.picked.email}).`,
+      }));
+    });
+
+    forkJoin(tasks)
+      .pipe(
+        takeWhile(() => this.alive),
+        tap(() => this.analyticsService.trackEvent('sentResults', {
+          event_category: AnalyticsCategories.SecretSantaGenerator,
+        })),
+      ).subscribe();
   }
 
   hasEnoughParticipantsForDraw(): boolean {
@@ -200,13 +211,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const shuffled = ArrayHelper.completeShuffle(this.participants);
     for (let i = 0; i < this.participants.length; i++) {
-      this.participants[i].picked = shuffled[i].name;
+      this.participants[i].picked = shuffled[i];
     }
   }
 
   private clearPicks(): void {
     this.participants.forEach((participant) => {
-      participant.picked = '';
+      participant.picked = null;
     });
   }
 
@@ -220,7 +231,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return {
       name: '',
       email: '',
-      picked: '',
     };
   }
 }
