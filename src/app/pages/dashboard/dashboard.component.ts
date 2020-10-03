@@ -1,16 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
-import { BehaviorSubject, forkJoin, iif, Observable, of } from 'rxjs';
+import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take, takeWhile, tap } from 'rxjs/operators';
-import { AnalyticsService, MailService } from '../../@core/utils';
+import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
-import { MailResponse } from '../../@core/utils/mail.service';
-
-interface Participant {
-  name: string;
-  email: string;
-  picked?: Participant;
-}
 
 enum ResultsState {
   Hidden,
@@ -67,7 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private analyticsService: AnalyticsService, private mailService: MailService) {}
+  constructor(private analyticsService: AnalyticsService, private drawService: DrawService) {}
 
   ngOnInit(): void {
     this.isEditing.pipe(
@@ -142,23 +135,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       event_category: AnalyticsCategories.SecretSantaGenerator,
     });
 
-    const tasks: Observable<MailResponse>[] = [];
-    this.participants.forEach(participant => {
-      tasks.push(this.mailService.send({
-        to: participant.email,
-        from: 'Secret Santa Generator',
-        subject: 'Your draw pick',
-        body: `You have selected: ${participant.picked.name} (${participant.picked.email}).`,
-      }));
-    });
-
-    forkJoin(tasks)
-      .pipe(
-        takeWhile(() => this.alive),
-        tap(() => this.analyticsService.trackEvent('sentResults', {
-          event_category: AnalyticsCategories.SecretSantaGenerator,
-        })),
-      ).subscribe();
+    this.drawService.sendResults(this.participants).pipe(
+      takeWhile(() => this.alive),
+      tap(() => this.analyticsService.trackEvent('sentResults', {
+        event_category: AnalyticsCategories.SecretSantaGenerator,
+      })),
+    ).subscribe();
   }
 
   hasEnoughParticipantsForDraw(): boolean {
