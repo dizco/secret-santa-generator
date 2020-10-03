@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
 import { BehaviorSubject, iif, Observable, of } from 'rxjs';
-import { filter, map, mergeMap, switchMap, take, takeWhile } from 'rxjs/operators';
+import { filter, map, mergeMap, take, takeWhile } from 'rxjs/operators';
 import { AnalyticsService } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 
