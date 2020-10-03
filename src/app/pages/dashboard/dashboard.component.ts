@@ -7,11 +7,13 @@ import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 
 interface Participant {
   name: string;
+  email: string;
   picked: string;
 }
 
 @Component({
   selector: 'ngx-dashboard',
+  styleUrls: ['dashboard.component.scss'],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
@@ -27,26 +29,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
   participants: Participant[] = [
     {
       name: 'Nick',
+      email: 'nick@example.com',
       picked: '',
     },
     {
       name: 'Eva',
+      email: 'eva@example.com',
       picked: '',
     },
     {
       name: 'Jack',
+      email: 'jack@example.com',
       picked: '',
     },
     {
       name: 'Lee',
+      email: 'lee@example.com',
       picked: '',
     },
     {
       name: 'Alan',
+      email: 'alan@example.com',
       picked: '',
     },
     {
       name: 'Kate',
+      email: 'kate@example.com',
       picked: '',
     },
   ];
@@ -146,6 +154,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private static buildEmptyParticipant(): Participant {
     return {
       name: '',
+      email: '',
       picked: '',
     };
   }
