@@ -47,7 +47,7 @@
               <div class="col-md-5 d-flex align-items-center">
                 <div class="draw-participant-card status-primary size-medium shape-rectangle">
                   <nb-user *ngIf="(getResultsState() | async) === resultsState.Generated" [name]="participant.picked.name" [showTitle]="false" size="medium"></nb-user>
-                  <nb-user *ngIf="(getResultsState() | async) === resultsState.Editing" [name]="participant.picked.name" [showTitle]="false" size="medium"></nb-user>
+                  <nb-user *ngIf="(getResultsState() | async) === resultsState.Editing" [name]="participant.picked?.name" [showTitle]="false" size="medium"></nb-user>
                   <ng-container *ngIf="(getResultsState() | async) === resultsState.Hidden">Hidden :)</ng-container>
                 </div>
               </div>

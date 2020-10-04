@@ -7,7 +7,10 @@ export interface MailOptions {
   from: string;
   to: string;
   subject: string;
-  body: string;
+  message: {
+    header: string;
+    body: string;
+  };
 }
 
 export interface MailResponse {
@@ -30,7 +33,7 @@ export class MailService {
       }),
     };
 
-    return this.http.post<Mail>('https://mailserver.kiosoft.ca/send', MailService.buildMailRequestBody(options), httpOptions)
+    return this.http.post<Mail>('http://localhost:8000/send', MailService.buildMailRequestBody(options), httpOptions)
       .pipe(
         retry(1),
         catchError(MailService.handleError),
@@ -46,9 +49,14 @@ export class MailService {
   private static buildMailRequestBody(options: MailOptions): any {
     return {
       to: options.to,
-      from: options.from,
+      from: {
+        name: options.from,
+      },
       subject: options.subject,
-      body: options.body,
+      message: {
+        header: options.message.header,
+        body: options.message.body,
+      },
     };
   }
 
