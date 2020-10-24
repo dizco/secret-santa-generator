@@ -27,7 +27,6 @@ import { OktaAuthModule } from '@okta/okta-angular';
     NbAlertModule,
     FormsModule,
     ThemeModule,
-    OktaAuthModule,
   ],
   declarations: [
     DashboardComponent,

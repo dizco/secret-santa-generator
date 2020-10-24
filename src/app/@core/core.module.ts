@@ -9,6 +9,7 @@ import { AnalyticsService, DrawService, MailService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
 import { Auth0AuthStrategy, Auth0Token } from './auth/auth0-auth-strategy';
 import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
+import { OktaAuthStrategy, OktaToken } from './auth/okta-auth-strategy';
 
 const socialLinks = [
   {
@@ -49,11 +50,16 @@ const config = {
 export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
   ...DATA_SERVICES,
+
+  OktaAuthModule,
+  {
+    provide: OKTA_CONFIG, useValue: config,
+  },
   ...NbAuthModule.forRoot({
     strategies: [
-      Auth0AuthStrategy.setup({
+      OktaAuthStrategy.setup({
         name: 'okta',
-        baseEndpoint: 'https://dev-8656877.okta.com/oauth2/default/',
+        baseEndpoint: 'https://dev-8656877.okta.com/oauth2/default/v1/',
         clientId: '0oaf2qfvypHy6GuvL5d5',
         authorize: {
           responseType: NbOAuth2ResponseType.CODE,
@@ -61,7 +67,7 @@ export const NB_CORE_PROVIDERS = [
           redirectUri: 'http://localhost:4200/auth/callback',
         },
         token: {
-          class: Auth0Token,
+          class: OktaToken,
         },
       }),
     ],
@@ -76,9 +82,8 @@ export const NB_CORE_PROVIDERS = [
       },
     },
   }).providers,
-  Auth0AuthStrategy,
-  OktaAuthModule,
-  { provide: OKTA_CONFIG, useValue: config },
+  // Auth0AuthStrategy,
+  OktaAuthStrategy,
 
   NbSecurityModule.forRoot({
     accessControl: {
@@ -105,6 +110,7 @@ export const NB_CORE_PROVIDERS = [
 @NgModule({
   imports: [
     CommonModule,
+    OktaAuthModule,
   ],
   exports: [
     NbAuthModule,
