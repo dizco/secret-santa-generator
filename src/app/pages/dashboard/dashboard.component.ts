@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
 import { BehaviorSubject, iif, Observable, of } from 'rxjs';
-import { filter, map, mergeMap, take, takeWhile, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, take, takeWhile, tap } from 'rxjs/operators';
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
+import { NbAuthService } from '@nebular/auth';
 
 enum ResultsState {
   Hidden,
@@ -60,7 +61,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private analyticsService: AnalyticsService, private drawService: DrawService) {}
+  constructor(private analyticsService: AnalyticsService, private drawService: DrawService, private authService: NbAuthService) {}
 
   ngOnInit(): void {
     this.isEditing.pipe(
@@ -135,7 +136,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       event_category: AnalyticsCategories.SecretSantaGenerator,
     });
 
-    this.drawService.sendResults(this.participants).pipe(
+
+    this.authService.authenticate('auth0').pipe(
+      tap(r => console.log('r', r)),
+      switchMap(() => this.drawService.sendResults(this.participants)),
       takeWhile(() => this.alive),
       tap(() => this.analyticsService.trackEvent('sentResults', {
         event_category: AnalyticsCategories.SecretSantaGenerator,

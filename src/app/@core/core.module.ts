@@ -1,12 +1,13 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbAuthModule, NbDummyAuthStrategy } from '@nebular/auth';
+import { NbAuthModule, NbDummyAuthStrategy, NbOAuth2AuthStrategy, NbOAuth2ResponseType } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 
 import { throwIfAlreadyLoaded } from './module-import-guard';
 import { AnalyticsService, DrawService, MailService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
+import { Auth0AuthStrategy, Auth0Token } from './auth/auth0-auth-strategy';
 
 const socialLinks = [
   {
@@ -40,22 +41,33 @@ export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
   ...DATA_SERVICES,
   ...NbAuthModule.forRoot({
-
     strategies: [
-      NbDummyAuthStrategy.setup({
-        name: 'email',
-        delay: 3000,
+      Auth0AuthStrategy.setup({
+        name: 'auth0',
+        baseEndpoint: 'https://kiosoft.us.auth0.com/',
+        clientId: 'HKTkPebbbQs9maBWyFTkPyq3AT8Ki0JM',
+        authorize: {
+          responseType: NbOAuth2ResponseType.CODE,
+          scope: 'openid profile email',
+          redirectUri: 'http://localhost:4200/auth/callback',
+        },
+        token: {
+          class: Auth0Token,
+        },
       }),
     ],
     forms: {
       login: {
         socialLinks: socialLinks,
+        redirectDelay: 0,
+        strategy: 'auth0',
       },
       register: {
         socialLinks: socialLinks,
       },
     },
   }).providers,
+  Auth0AuthStrategy,
 
   NbSecurityModule.forRoot({
     accessControl: {
