@@ -5,6 +5,7 @@ import { filter, map, mergeMap, switchMap, take, takeWhile, tap } from 'rxjs/ope
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 import { NbAuthService } from '@nebular/auth';
+import { OktaAuthService } from '@okta/okta-angular';
 
 enum ResultsState {
   Hidden,
@@ -61,9 +62,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private analyticsService: AnalyticsService, private drawService: DrawService, private authService: NbAuthService) {}
+  constructor(private analyticsService: AnalyticsService, private drawService: DrawService, private authService: NbAuthService,
+    private oktaAuth: OktaAuthService) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const user = await this.oktaAuth.getUser();
+    console.log('user', user);
+
     this.isEditing.pipe(
       takeWhile(() => this.alive),
       filter((value) => !value), // Only when isEditing becomes false
@@ -137,14 +142,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
 
 
-    this.authService.authenticate('auth0').pipe(
+    this.oktaAuth.login();
+    /*this.authService.authenticate('okta').pipe(
       tap(r => console.log('r', r)),
       switchMap(() => this.drawService.sendResults(this.participants)),
       takeWhile(() => this.alive),
       tap(() => this.analyticsService.trackEvent('sentResults', {
         event_category: AnalyticsCategories.SecretSantaGenerator,
       })),
-    ).subscribe();
+    ).subscribe();*/
   }
 
   hasEnoughParticipantsForDraw(): boolean {

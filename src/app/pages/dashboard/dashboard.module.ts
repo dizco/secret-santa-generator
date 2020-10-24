@@ -13,6 +13,7 @@ import {
 import { ThemeModule } from '../../@theme/theme.module';
 import { DashboardComponent } from './dashboard.component';
 import { FormsModule } from '@angular/forms';
+import { OktaAuthModule } from '@okta/okta-angular';
 
 @NgModule({
   imports: [
@@ -26,6 +27,7 @@ import { FormsModule } from '@angular/forms';
     NbAlertModule,
     FormsModule,
     ThemeModule,
+    OktaAuthModule,
   ],
   declarations: [
     DashboardComponent,

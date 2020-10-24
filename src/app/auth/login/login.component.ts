@@ -7,6 +7,6 @@ import { NbLoginComponent } from '@nebular/auth';
 export class LoginComponent extends NbLoginComponent implements OnInit {
   ngOnInit(): void {
     console.log('Force trigger login');
-    this.login();
+    // this.login();
   }
 }

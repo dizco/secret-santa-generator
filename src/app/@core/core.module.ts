@@ -8,6 +8,7 @@ import { throwIfAlreadyLoaded } from './module-import-guard';
 import { AnalyticsService, DrawService, MailService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
 import { Auth0AuthStrategy, Auth0Token } from './auth/auth0-auth-strategy';
+import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
 
 const socialLinks = [
   {
@@ -37,15 +38,23 @@ export class NbSimpleRoleProvider extends NbRoleProvider {
   }
 }
 
+const config = {
+  clientId: '0oaf2qfvypHy6GuvL5d5',
+  issuer: 'https://dev-8656877.okta.com/oauth2/default',
+  redirectUri: 'http://localhost:4200/auth/callback',
+  scopes: ['openid', 'profile', 'email'],
+  pkce: true,
+};
+
 export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
   ...DATA_SERVICES,
   ...NbAuthModule.forRoot({
     strategies: [
       Auth0AuthStrategy.setup({
-        name: 'auth0',
-        baseEndpoint: 'https://kiosoft.us.auth0.com/',
-        clientId: 'HKTkPebbbQs9maBWyFTkPyq3AT8Ki0JM',
+        name: 'okta',
+        baseEndpoint: 'https://dev-8656877.okta.com/oauth2/default/',
+        clientId: '0oaf2qfvypHy6GuvL5d5',
         authorize: {
           responseType: NbOAuth2ResponseType.CODE,
           scope: 'openid profile email',
@@ -60,7 +69,7 @@ export const NB_CORE_PROVIDERS = [
       login: {
         socialLinks: socialLinks,
         redirectDelay: 0,
-        strategy: 'auth0',
+        strategy: 'okta',
       },
       register: {
         socialLinks: socialLinks,
@@ -68,6 +77,8 @@ export const NB_CORE_PROVIDERS = [
     },
   }).providers,
   Auth0AuthStrategy,
+  OktaAuthModule,
+  { provide: OKTA_CONFIG, useValue: config },
 
   NbSecurityModule.forRoot({
     accessControl: {

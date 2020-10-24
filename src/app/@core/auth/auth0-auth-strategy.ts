@@ -18,7 +18,7 @@ import {
 export class Auth0Token extends NbAuthOAuth2JWTToken {
 
   // let's rename it to exclude name clashes
-  static NAME = 'nb:auth:auth0:token';
+  static NAME = 'nb:auth:okta:token';
 
   getValue(): string {
     return this.token.id_token;
