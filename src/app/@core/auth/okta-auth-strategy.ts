@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { forkJoin, from, Observable, of as observableOf } from 'rxjs';
-import { map, switchMap, catchError, mapTo, tap } from 'rxjs/operators';
+import { map, switchMap, catchError, mapTo } from 'rxjs/operators';
 import {
   NbOAuth2AuthStrategy,
   NbOAuth2ResponseType,
