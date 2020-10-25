@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { forkJoin, from, Observable, of as observableOf } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { map, switchMap, catchError, mapTo, tap } from 'rxjs/operators';
 import {
   NbOAuth2AuthStrategy,
   NbOAuth2ResponseType,
@@ -97,6 +97,8 @@ export class OktaAuthStrategy extends NbOAuth2AuthStrategy {
   }
 
   logout(): Observable<NbAuthResult> {
-    return observableOf(new NbAuthResult(true));
+    return from(this.oktaAuth.logout()).pipe(
+      mapTo(new NbAuthResult(true)),
+    );
   }
 }
