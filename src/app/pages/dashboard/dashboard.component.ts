@@ -5,7 +5,6 @@ import { filter, map, mergeMap, switchMap, take, takeWhile, tap } from 'rxjs/ope
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 import { NbAuthService } from '@nebular/auth';
-import { NonDisruptiveAuthService } from '../../@core/auth/non-disruptive-auth.service';
 import { NbDialogService } from '@nebular/theme';
 import { ConfirmPromptComponent, ConfirmPromptResult } from './confirm-prompt.component';
 import { NbDialogConfig } from '@nebular/theme/components/dialog/dialog-config';
@@ -65,8 +64,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private analyticsService: AnalyticsService, private drawService: DrawService, private dialogService: NbDialogService,
-              private authService: NbAuthService, private nonDisruptiveAuthService: NonDisruptiveAuthService) {}
+  constructor(private analyticsService: AnalyticsService, private drawService: DrawService,
+              private dialogService: NbDialogService, private authService: NbAuthService) {}
 
   async ngOnInit(): Promise<void> {
     this.isEditing.pipe(
