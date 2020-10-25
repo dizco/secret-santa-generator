@@ -4,7 +4,7 @@ import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './login/login.component';
 import { NbAuthModule } from '@nebular/auth';
 import { CallbackComponent } from './callback/callback.component';
-import { NbLayoutModule } from '@nebular/theme';
+import { NbAlertModule, NbLayoutModule } from '@nebular/theme';
 import { OktaAuthModule } from '@okta/okta-angular';
 
 @NgModule({
@@ -13,6 +13,7 @@ import { OktaAuthModule } from '@okta/okta-angular';
     NbAuthModule,
     ThemeModule,
     NbLayoutModule,
+    NbAlertModule,
     OktaAuthModule,
   ],
   declarations: [

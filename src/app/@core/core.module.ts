@@ -67,7 +67,11 @@ export const NB_CORE_PROVIDERS = [
         },
       }),
     ],
-    forms: {},
+    forms: {
+      login: {
+        strategy: 'okta',
+      },
+    },
   }).providers,
   OktaAuthStrategy,
 

@@ -131,18 +131,35 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  private authWindow: any;
   sendResults(): void {
     this.analyticsService.trackEvent('sendResults', {
       event_category: AnalyticsCategories.SecretSantaGenerator,
     });
 
-    this.authService.authenticate('okta').pipe(
-      switchMap(() => this.drawService.sendResults(this.participants)),
+    delete (window as any).oauth2Callback;
+
+    (window as any).oauth2Callback = {
+      callback: (something: any) => {
+        console.log('Calling back from another window!', something);
+      },
+    };
+    this.authWindow = window.open('/auth');
+
+    /*this.authService.isAuthenticated().pipe(
+      switchMap((isAuthenticated) => {
+        if (isAuthenticated) {
+          return this.drawService.sendResults(this.participants).pipe(
+            tap(() => this.analyticsService.trackEvent('sentResults', {
+              event_category: AnalyticsCategories.SecretSantaGenerator,
+            })),
+          );
+        }
+        // this.authService.authenticate('okta')
+        return of();
+      }),
       takeWhile(() => this.alive),
-      tap(() => this.analyticsService.trackEvent('sentResults', {
-        event_category: AnalyticsCategories.SecretSantaGenerator,
-      })),
-    ).subscribe();
+    ).subscribe();*/
   }
 
   hasEnoughParticipantsForDraw(): boolean {
