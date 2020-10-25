@@ -7,6 +7,7 @@ import {
   NbIconModule,
   NbInputModule,
   NbListModule,
+  NbSpinnerModule,
   NbTooltipModule,
   NbUserModule,
 } from '@nebular/theme';
@@ -29,6 +30,7 @@ import { ConfirmPromptComponent } from './confirm-prompt.component';
     FormsModule,
     ThemeModule,
     NbDialogModule.forChild(),
+    NbSpinnerModule,
   ],
   entryComponents: [
     ConfirmPromptComponent,

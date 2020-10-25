@@ -142,26 +142,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
 
     this.authService.isAuthenticated().pipe(
-      switchMap((isAuthenticated) => {
-        if (!isAuthenticated) {
-          const config: Partial<NbDialogConfig<Partial<ConfirmPromptComponent> | string>> = {
-            context: {
-              drawParticipantsCount: this.participants.length,
-              requireLogin: true,
-            },
-          };
-          return (this.dialogService.open(ConfirmPromptComponent, config)).onClose.pipe(
-            tap((result: ConfirmPromptResult) => console.log('confirm prompt result', result)),
-            // switchMap((result: ConfirmPromptResult) => result.),
-          );
-          /*return this.nonDisruptiveAuthService.authenticate().pipe(
-            map((authResult: NbAuthResult) => authResult.isSuccess()),
-          );*/
-        }
-
-        return of(true);
+      map((isAuthenticated) => {
+        const config: Partial<NbDialogConfig<Partial<ConfirmPromptComponent> | string>> = {
+          context: {
+            drawParticipantsCount: this.participants.length,
+            requireLogin: !isAuthenticated,
+          },
+        };
+        return config;
       }),
-      filter((proceed: boolean) => proceed), // TODO: Handle errors better.
+      switchMap((config) => this.dialogService.open(ConfirmPromptComponent, config).onClose),
+      map((result: ConfirmPromptResult) => result.confirmed),
+      filter((proceed: boolean) => proceed),
       switchMap(() => {
         return this.drawService.sendResults(this.participants).pipe(
           tap(() => this.analyticsService.trackEvent('sentResults', {
