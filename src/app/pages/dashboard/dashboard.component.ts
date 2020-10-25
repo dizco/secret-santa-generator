@@ -4,10 +4,11 @@ import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take, takeWhile, tap } from 'rxjs/operators';
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
-import { NbAuthService } from '@nebular/auth';
+import { NbAuthService, NbAuthToken } from '@nebular/auth';
 import { NbDialogService } from '@nebular/theme';
 import { ConfirmPromptComponent, ConfirmPromptResult } from './confirm-prompt.component';
 import { NbDialogConfig } from '@nebular/theme/components/dialog/dialog-config';
+import { OktaToken } from '../../@core/auth/okta-auth-strategy';
 
 enum ResultsState {
   Hidden,
@@ -150,16 +151,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
         };
         return config;
       }),
-      switchMap((config) => this.dialogService.open(ConfirmPromptComponent, config).onClose),
-      map((result: ConfirmPromptResult) => result && result.confirmed),
+      switchMap((config) => this.dialogService.open(ConfirmPromptComponent, config).onClose.pipe(
+        map((result: ConfirmPromptResult) => result && result.confirmed),
+      )),
       filter((proceed: boolean) => proceed),
-      switchMap(() => {
-        return this.drawService.sendResults(this.participants).pipe(
-          tap(() => this.analyticsService.trackEvent('sentResults', {
-            event_category: AnalyticsCategories.SecretSantaGenerator,
-          })),
-        );
-      }),
+      switchMap(() => this.authService.getToken().pipe(
+        map((token: NbAuthToken) => token.getPayload() as OktaToken),
+        map((token: OktaToken) => ({ name: token.user.name, email: token.user.email } as Participant)),
+      )),
+      switchMap((creator: Participant) =>  this.drawService.sendResults(this.participants, creator).pipe(
+        tap(() => this.analyticsService.trackEvent('sentResults', {
+          event_category: AnalyticsCategories.SecretSantaGenerator,
+        })),
+      )),
       takeWhile(() => this.alive),
     ).subscribe();
   }
