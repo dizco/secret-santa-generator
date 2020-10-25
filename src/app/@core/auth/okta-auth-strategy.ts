@@ -13,11 +13,19 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { NB_WINDOW } from '@nebular/theme';
 import { ActivatedRoute } from '@angular/router';
-import { OktaAuthService } from '@okta/okta-angular';
+import { OktaAuthService, UserClaims } from '@okta/okta-angular';
+
+export interface OktaToken {
+  user: UserClaims;
+  idToken: string;
+  accessToken: string;
+}
 
 export class OktaToken extends NbAuthOAuth2JWTToken {
   // let's rename it to exclude name clashes
   static NAME = 'nb:auth:okta:token';
+
+  protected readonly token: OktaToken;
 
   getValue(): string {
     return this.token.accessToken;
@@ -39,7 +47,7 @@ export class OktaAuthStrategy extends NbOAuth2AuthStrategy {
               user: this.oktaAuth.getUser(),
               idToken: this.oktaAuth.getIdToken(),
               accessToken: this.oktaAuth.getAccessToken(),
-            });
+            }) as Observable<OktaToken>;
           }),
           map((res) => {
             return new NbAuthResult(
@@ -63,14 +71,6 @@ export class OktaAuthStrategy extends NbOAuth2AuthStrategy {
           }),
 
         );
-    },
-  };
-
-  protected redirectResults: { [key: string]: Function } = {
-    [NbOAuth2ResponseType.CODE]: () => {
-      return observableOf(this.route.snapshot.queryParams).pipe(
-        map((params: any) => !!(params && (params.code || params.error))),
-      );
     },
   };
 

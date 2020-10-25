@@ -1,13 +1,12 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbAuthModule, NbDummyAuthStrategy, NbOAuth2AuthStrategy, NbOAuth2ResponseType } from '@nebular/auth';
+import { NbAuthModule, NbOAuth2ResponseType } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 
 import { throwIfAlreadyLoaded } from './module-import-guard';
 import { AnalyticsService, DrawService, MailService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
-import { Auth0AuthStrategy, Auth0Token } from './auth/auth0-auth-strategy';
 import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
 import { OktaAuthStrategy, OktaToken } from './auth/okta-auth-strategy';
 
@@ -57,32 +56,19 @@ export const NB_CORE_PROVIDERS = [
   },
   ...NbAuthModule.forRoot({
     strategies: [
-      OktaAuthStrategy.setup({
+      OktaAuthStrategy.setup({ // Uses Okta's Auth service under the hood
         name: 'okta',
-        baseEndpoint: 'https://dev-8656877.okta.com/oauth2/default/v1/',
-        clientId: '0oaf2qfvypHy6GuvL5d5',
+        clientId: '',
         authorize: {
           responseType: NbOAuth2ResponseType.CODE,
-          scope: 'openid profile email',
-          redirectUri: 'http://localhost:4200/auth/callback',
         },
         token: {
           class: OktaToken,
         },
       }),
     ],
-    forms: {
-      login: {
-        socialLinks: socialLinks,
-        redirectDelay: 0,
-        strategy: 'okta',
-      },
-      register: {
-        socialLinks: socialLinks,
-      },
-    },
+    forms: {},
   }).providers,
-  // Auth0AuthStrategy,
   OktaAuthStrategy,
 
   NbSecurityModule.forRoot({

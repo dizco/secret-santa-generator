@@ -64,10 +64,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(private analyticsService: AnalyticsService, private drawService: DrawService, private authService: NbAuthService) {}
 
   async ngOnInit(): Promise<void> {
-    // const user = await this.oktaAuth.getUser();
-    const user = await this.authService.getToken().toPromise();
-    console.log('user', user);
-
     this.isEditing.pipe(
       takeWhile(() => this.alive),
       filter((value) => !value), // Only when isEditing becomes false
@@ -140,10 +136,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       event_category: AnalyticsCategories.SecretSantaGenerator,
     });
 
-
-    // this.oktaAuth.login();
     this.authService.authenticate('okta').pipe(
-      tap(r => console.log('r', r)),
       switchMap(() => this.drawService.sendResults(this.participants)),
       takeWhile(() => this.alive),
       tap(() => this.analyticsService.trackEvent('sentResults', {
