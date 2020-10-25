@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { NbAuthResult } from '@nebular/auth';
 import { Observable } from 'rxjs';
@@ -26,13 +26,16 @@ interface ConfirmPromptDialogRef extends NbDialogRef<ConfirmPromptComponent> {
 export class ConfirmPromptComponent implements OnDestroy {
   private alive = true;
   protected dialogRef: ConfirmPromptDialogRef;
+
+  @ViewChild('send', { read: ElementRef, static: false }) sendButton: ElementRef;
   isAuthenticating: boolean;
   errors: string[] = [];
 
   drawParticipantsCount: number;
   requireLogin: boolean; // Context is injected dynamically by the NbDialogService
 
-  constructor(dialogRef: NbDialogRef<ConfirmPromptComponent>, private nonDisruptiveAuthService: NonDisruptiveAuthService) {
+  constructor(dialogRef: NbDialogRef<ConfirmPromptComponent>, private nonDisruptiveAuthService: NonDisruptiveAuthService,
+              private changeDetector: ChangeDetectorRef) {
     this.dialogRef = dialogRef;
   }
 
@@ -63,6 +66,10 @@ export class ConfirmPromptComponent implements OnDestroy {
       }),
     ).subscribe(() => {
       this.isAuthenticating = false;
+
+      // Since we open a new tab, our app freezes and stops detecting changes until a click on the page happens
+      // To bypass this UX problem, we force a manual change detection
+      this.changeDetector.detectChanges();
     });
   }
 

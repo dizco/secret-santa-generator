@@ -151,7 +151,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         return config;
       }),
       switchMap((config) => this.dialogService.open(ConfirmPromptComponent, config).onClose),
-      map((result: ConfirmPromptResult) => result.confirmed),
+      map((result: ConfirmPromptResult) => result && result.confirmed),
       filter((proceed: boolean) => proceed),
       switchMap(() => {
         return this.drawService.sendResults(this.participants).pipe(
