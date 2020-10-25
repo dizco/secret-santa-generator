@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
-import { BehaviorSubject, iif, Observable, of } from 'rxjs';
+import { BehaviorSubject, empty, iif, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take, takeWhile, tap } from 'rxjs/operators';
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
-import { NbAuthService } from '@nebular/auth';
+import { NbAuthResult, NbAuthService } from '@nebular/auth';
+import { NonDisruptiveAuthService } from '../../@core/auth/non-disruptive-auth.service';
 
 enum ResultsState {
   Hidden,
@@ -61,7 +62,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private analyticsService: AnalyticsService, private drawService: DrawService, private authService: NbAuthService) {}
+  constructor(private analyticsService: AnalyticsService, private drawService: DrawService,
+              private authService: NbAuthService, private nonDisruptiveAuthService: NonDisruptiveAuthService) {}
 
   async ngOnInit(): Promise<void> {
     this.isEditing.pipe(
@@ -131,35 +133,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private authWindow: any;
   sendResults(): void {
     this.analyticsService.trackEvent('sendResults', {
       event_category: AnalyticsCategories.SecretSantaGenerator,
     });
 
-    delete (window as any).oauth2Callback;
-
-    (window as any).oauth2Callback = {
-      callback: (something: any) => {
-        console.log('Calling back from another window!', something);
-      },
-    };
-    this.authWindow = window.open('/auth');
-
-    /*this.authService.isAuthenticated().pipe(
+    this.authService.isAuthenticated().pipe(
       switchMap((isAuthenticated) => {
         if (isAuthenticated) {
-          return this.drawService.sendResults(this.participants).pipe(
-            tap(() => this.analyticsService.trackEvent('sentResults', {
-              event_category: AnalyticsCategories.SecretSantaGenerator,
-            })),
+          // TODO: Prompt window to explain what will happen
+          return this.nonDisruptiveAuthService.authenticate().pipe(
+            map((authResult: NbAuthResult) => authResult.isSuccess()),
           );
         }
-        // this.authService.authenticate('okta')
-        return of();
+
+        return of(true);
+      }),
+      filter((proceed: boolean) => proceed), // TODO: Handle errors better.
+      switchMap(() => {
+        return this.drawService.sendResults(this.participants).pipe(
+          tap(() => this.analyticsService.trackEvent('sentResults', {
+            event_category: AnalyticsCategories.SecretSantaGenerator,
+          })),
+        );
       }),
       takeWhile(() => this.alive),
-    ).subscribe();*/
+    ).subscribe();
   }
 
   hasEnoughParticipantsForDraw(): boolean {

@@ -3,30 +3,13 @@ import { CommonModule } from '@angular/common';
 import { NbAuthModule, NbOAuth2ResponseType } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
-
 import { throwIfAlreadyLoaded } from './module-import-guard';
 import { AnalyticsService, DrawService, MailService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
 import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
 import { OktaAuthStrategy, OktaToken } from './auth/okta-auth-strategy';
-
-const socialLinks = [
-  {
-    url: 'https://github.com/akveo/nebular',
-    target: '_blank',
-    icon: 'github',
-  },
-  {
-    url: 'https://www.facebook.com/akveo/',
-    target: '_blank',
-    icon: 'facebook',
-  },
-  {
-    url: 'https://twitter.com/akveo_inc',
-    target: '_blank',
-    icon: 'twitter',
-  },
-];
+import { AuthWindowService } from './auth/auth-window.service';
+import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 
 const DATA_SERVICES = [
 ];
@@ -74,6 +57,8 @@ export const NB_CORE_PROVIDERS = [
     },
   }).providers,
   OktaAuthStrategy,
+  AuthWindowService,
+  NonDisruptiveAuthService,
 
   NbSecurityModule.forRoot({
     accessControl: {
