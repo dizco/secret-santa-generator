@@ -1,59 +1,74 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map, takeWhile } from 'rxjs/operators';
-import { AnalyticsService } from '../../@core/utils';
+import { BehaviorSubject, iif, Observable, of } from 'rxjs';
+import { filter, map, mergeMap, switchMap, take, takeWhile, tap } from 'rxjs/operators';
+import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
+import { NbAuthService, NbAuthToken } from '@nebular/auth';
+import { NbDialogService } from '@nebular/theme';
+import { ConfirmPromptComponent, ConfirmPromptResult } from './confirm-prompt.component';
+import { NbDialogConfig } from '@nebular/theme/components/dialog/dialog-config';
+import { OktaToken } from '../../@core/auth/okta-auth-strategy';
 
-interface Participant {
-  name: string;
-  picked: string;
+enum ResultsState {
+  Hidden,
+  Editing,
+  Generated,
 }
 
 @Component({
   selector: 'ngx-dashboard',
+  styleUrls: ['dashboard.component.scss'],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private alive = true;
 
-  private isEditingSubject = new BehaviorSubject<boolean>(true);
+  private resultsViewEnabledSubject = new BehaviorSubject<boolean>(false);
+  resultsViewEnabled: Observable<boolean> = this.resultsViewEnabledSubject.pipe(
+    takeWhile(() => this.alive),
+    map(v => v),
+  );
 
+  private isEditingSubject = new BehaviorSubject<boolean>(true);
   isEditing: Observable<boolean> = this.isEditingSubject.pipe(
     takeWhile(() => this.alive),
     map(v => v),
   );
 
+  resultsState = ResultsState;
+
   participants: Participant[] = [
     {
       name: 'Nick',
-      picked: '',
+      email: 'nick@example.com',
     },
     {
       name: 'Eva',
-      picked: '',
+      email: 'eva@example.com',
     },
     {
       name: 'Jack',
-      picked: '',
+      email: 'jack@example.com',
     },
     {
       name: 'Lee',
-      picked: '',
+      email: 'lee@example.com',
     },
     {
       name: 'Alan',
-      picked: '',
+      email: 'alan@example.com',
     },
     {
       name: 'Kate',
-      picked: '',
+      email: 'kate@example.com',
     },
   ];
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService, private drawService: DrawService,
+              private dialogService: NbDialogService, private authService: NbAuthService) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.isEditing.pipe(
       takeWhile(() => this.alive),
       filter((value) => !value), // Only when isEditing becomes false
@@ -91,6 +106,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  enableResultsView(): void {
+    this.resultsViewEnabledSubject.next(true);
+    this.analyticsService.trackEvent('enableResultsView', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
+  }
+
+  disableResultsView(): void {
+    this.resultsViewEnabledSubject.next(false);
+    this.analyticsService.trackEvent('enableResultsView', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
+  }
+
   removeParticipant(participant: Participant): void {
     this.participants = this.participants.filter((p) => p !== participant);
 
@@ -107,8 +136,70 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  sendResults(): void {
+    this.analyticsService.trackEvent('sendResults', {
+      event_category: AnalyticsCategories.SecretSantaGenerator,
+    });
+
+    this.authService.isAuthenticated().pipe(
+      map((isAuthenticated) => {
+        const config: Partial<NbDialogConfig<Partial<ConfirmPromptComponent> | string>> = {
+          context: {
+            drawParticipantsCount: this.participants.length,
+            requireLogin: !isAuthenticated,
+          },
+        };
+        return config;
+      }),
+      switchMap((config) => this.dialogService.open(ConfirmPromptComponent, config).onClose.pipe(
+        map((result: ConfirmPromptResult) => result && result.confirmed),
+      )),
+      filter((proceed: boolean) => proceed),
+      switchMap(() => this.authService.getToken().pipe(
+        map((token: NbAuthToken) => token.getPayload() as OktaToken),
+        map((token: OktaToken) => ({ name: token.user.name, email: token.user.email } as Participant)),
+      )),
+      switchMap((creator: Participant) =>  this.drawService.sendResults(this.participants, creator).pipe(
+        tap(() => this.analyticsService.trackEvent('sentResults', {
+          event_category: AnalyticsCategories.SecretSantaGenerator,
+        })),
+      )),
+      takeWhile(() => this.alive),
+    ).subscribe();
+  }
+
   hasEnoughParticipantsForDraw(): boolean {
     return this.participants.length > 1;
+  }
+
+  allParticipantsHaveAnEmail(): boolean {
+    return this.participants.every((participant) => {
+      return participant.email !== '';
+    });
+  }
+
+  canEmailResults(): Observable<boolean> {
+    return this.isEditing.pipe(
+      take(1),
+      map((isEditing: boolean) => {
+        return !isEditing
+          && this.hasEnoughParticipantsForDraw()
+          && this.allParticipantsHaveAnEmail();
+      }),
+    );
+  }
+
+  getResultsState(): Observable<ResultsState> {
+    return this.resultsViewEnabled.pipe(
+      mergeMap(enabled =>
+        iif(() => enabled,
+          this.isEditing.pipe(
+            map(isEditing => isEditing ? ResultsState.Editing : ResultsState.Generated),
+          ),
+          of(ResultsState.Hidden),
+        ),
+      ),
+    );
   }
 
   private generate(): void {
@@ -127,26 +218,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const shuffled = ArrayHelper.completeShuffle(this.participants);
     for (let i = 0; i < this.participants.length; i++) {
-      this.participants[i].picked = shuffled[i].name;
+      this.participants[i].picked = shuffled[i];
     }
   }
 
   private clearPicks(): void {
     this.participants.forEach((participant) => {
-      participant.picked = '';
+      participant.picked = null;
     });
   }
 
   private filterInvalidParticipants(): void {
     this.participants = this.participants.filter((participant) => {
-      return participant.name !== '';
+      return participant.name !== '' || participant.email !== '';
     });
   }
 
   private static buildEmptyParticipant(): Participant {
     return {
       name: '',
-      picked: '',
+      email: '',
     };
   }
 }

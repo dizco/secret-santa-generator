@@ -3,9 +3,11 @@ import {
   NbAlertModule,
   NbButtonModule,
   NbCardModule,
+  NbDialogModule,
   NbIconModule,
   NbInputModule,
   NbListModule,
+  NbSpinnerModule,
   NbTooltipModule,
   NbUserModule,
 } from '@nebular/theme';
@@ -13,6 +15,7 @@ import {
 import { ThemeModule } from '../../@theme/theme.module';
 import { DashboardComponent } from './dashboard.component';
 import { FormsModule } from '@angular/forms';
+import { ConfirmPromptComponent } from './confirm-prompt.component';
 
 @NgModule({
   imports: [
@@ -26,9 +29,15 @@ import { FormsModule } from '@angular/forms';
     NbAlertModule,
     FormsModule,
     ThemeModule,
+    NbDialogModule.forChild(),
+    NbSpinnerModule,
+  ],
+  entryComponents: [
+    ConfirmPromptComponent,
   ],
   declarations: [
     DashboardComponent,
+    ConfirmPromptComponent,
   ],
 })
 export class DashboardModule { }

@@ -1,0 +1,52 @@
+@import '../../@theme/styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '~bootstrap/scss/mixins/breakpoints';
+
+@include nb-install-component() {
+  .draw-participant-card {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+
+    line-height: 1rem;
+    font-family: nb-theme(button-text-font-family);
+    font-weight: nb-theme(button-text-font-weight);
+    border-radius: nb-theme(border-radius);
+
+    background-color: nb-theme(button-outline-background-color);
+    border-style: nb-theme(button-outline-border-style);
+    border-width: nb-theme(button-outline-border-width);
+
+    @each $shape in nb-get-shapes() {
+      &.shape-#{$shape} {
+        border-radius: nb-theme(button-#{$shape}-border-radius);
+      }
+    }
+
+    @each $size in nb-get-sizes() {
+      &.size-#{$size} {
+        padding: nb-theme(button-outline-#{$size}-padding);
+        font-size: nb-theme(button-#{$size}-text-font-size);
+        line-height: nb-theme(button-#{$size}-text-line-height);
+      }
+    }
+
+    @each $status in nb-get-statuses() {
+      &.status-#{$status} {
+        border-color: nb-theme(button-outline-#{$status}-disabled-border-color);
+        color: nb-theme(button-outline-#{$status}-disabled-text-color);
+      }
+    }
+
+    input {
+      max-width: 100%;
+      width: 100%;
+      background-color: nb-theme(card-background-color);
+      // Only bottom border
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      border-radius: unset;
+    }
+  }
+}
