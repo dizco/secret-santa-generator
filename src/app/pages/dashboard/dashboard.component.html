@@ -63,8 +63,11 @@
               <nb-icon icon="alert-triangle" status="warning"></nb-icon> <span>Can't email results for participants without an email.</span>
             </nb-alert>
           </div>
-          <div class="col-md-3 d-flex justify-content-end align-items-start m-3">
-            <button nbButton status="primary" size="small" [disabled]="!(canEmailResults() | async)" (click)="sendResults()" nbTooltip="Send results by email"><nb-icon icon="email-outline"></nb-icon> Send results</button>
+          <div class="col-md-3 d-flex justify-content-end m-3">
+            <div class="d-flex flex-column">
+              <span>Recaptcha here</span>
+              <button nbButton status="primary" size="small" [disabled]="!(canEmailResults() | async)" (click)="sendResults()" nbTooltip="Send results by email"><nb-icon icon="email-outline"></nb-icon> Send results</button>
+            </div>
           </div>
         </div>
       </nb-card-body>

@@ -4,8 +4,11 @@ import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take, takeWhile, tap } from 'rxjs/operators';
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
-import { NbAuthResult, NbAuthService } from '@nebular/auth';
+import { NbAuthService } from '@nebular/auth';
 import { NonDisruptiveAuthService } from '../../@core/auth/non-disruptive-auth.service';
+import { NbDialogService } from '@nebular/theme';
+import { ConfirmPromptComponent, ConfirmPromptResult } from './confirm-prompt.component';
+import { NbDialogConfig } from '@nebular/theme/components/dialog/dialog-config';
 
 enum ResultsState {
   Hidden,
@@ -62,7 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private analyticsService: AnalyticsService, private drawService: DrawService,
+  constructor(private analyticsService: AnalyticsService, private drawService: DrawService, private dialogService: NbDialogService,
               private authService: NbAuthService, private nonDisruptiveAuthService: NonDisruptiveAuthService) {}
 
   async ngOnInit(): Promise<void> {
@@ -140,11 +143,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.authService.isAuthenticated().pipe(
       switchMap((isAuthenticated) => {
-        if (isAuthenticated) {
-          // TODO: Prompt window to explain what will happen
-          return this.nonDisruptiveAuthService.authenticate().pipe(
-            map((authResult: NbAuthResult) => authResult.isSuccess()),
+        if (!isAuthenticated) {
+          const config: Partial<NbDialogConfig<Partial<ConfirmPromptComponent> | string>> = {
+            context: {
+              drawParticipantsCount: this.participants.length,
+              requireLogin: true,
+            },
+          };
+          return (this.dialogService.open(ConfirmPromptComponent, config)).onClose.pipe(
+            tap((result: ConfirmPromptResult) => console.log('confirm prompt result', result)),
+            // switchMap((result: ConfirmPromptResult) => result.),
           );
+          /*return this.nonDisruptiveAuthService.authenticate().pipe(
+            map((authResult: NbAuthResult) => authResult.isSuccess()),
+          );*/
         }
 
         return of(true);
