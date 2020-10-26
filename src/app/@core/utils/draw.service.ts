@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { MailResponse, MailService } from './mail.service';
+import { catchError } from 'rxjs/operators';
 
 export interface Participant {
   name: string;
@@ -29,7 +30,15 @@ export class DrawService {
 <br> <a href="https://secretsantagenerator.kiosoft.ca/">secretsantagenerator.kiosoft.ca</a>`,
           // tslint:enable
         },
-      }));
+      }).pipe(
+        catchError((error) => {
+          return of({
+            success: false,
+            mailTo: participant.email,
+            message: error,
+          } as MailResponse);
+        }),
+      ));
     });
 
     return forkJoin(tasks);

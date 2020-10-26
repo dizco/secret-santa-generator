@@ -1,14 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
-import { BehaviorSubject, iif, Observable, of } from 'rxjs';
-import { filter, map, mergeMap, switchMap, take, takeWhile, tap } from 'rxjs/operators';
+import { BehaviorSubject, iif, Observable, of, zip } from 'rxjs';
+import { filter, flatMap, map, mergeMap, switchMap, take, takeWhile, tap, toArray } from 'rxjs/operators';
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 import { NbAuthService, NbAuthToken } from '@nebular/auth';
-import { NbDialogService } from '@nebular/theme';
+import { NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ConfirmPromptComponent, ConfirmPromptResult } from './confirm-prompt.component';
 import { NbDialogConfig } from '@nebular/theme/components/dialog/dialog-config';
 import { OktaToken } from '../../@core/auth/okta-auth-strategy';
+import { MailResponse } from '../../@core/utils/mail.service';
 
 enum ResultsState {
   Hidden,
@@ -35,6 +36,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     takeWhile(() => this.alive),
     map(v => v),
   );
+
+  isSending: boolean = false;
 
   resultsState = ResultsState;
 
@@ -66,7 +69,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ];
 
   constructor(private analyticsService: AnalyticsService, private drawService: DrawService,
-              private dialogService: NbDialogService, private authService: NbAuthService) {}
+              private dialogService: NbDialogService, private authService: NbAuthService,
+              private toastrService: NbToastrService) {}
 
   async ngOnInit(): Promise<void> {
     this.isEditing.pipe(
@@ -155,16 +159,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
         map((result: ConfirmPromptResult) => result && result.confirmed),
       )),
       filter((proceed: boolean) => proceed),
+      tap(() => this.isSending = true),
       switchMap(() => this.authService.getToken().pipe(
         map((token: NbAuthToken) => token.getPayload() as OktaToken),
         map((token: OktaToken) => ({ name: token.user.name, email: token.user.email } as Participant)),
       )),
-      switchMap((creator: Participant) =>  this.drawService.sendResults(this.participants, creator).pipe(
-        tap(() => this.analyticsService.trackEvent('sentResults', {
-          event_category: AnalyticsCategories.SecretSantaGenerator,
+      switchMap((creator: Participant) => of(this.participants).pipe(
+        flatMap((p) => p), // Split the array
+        mergeMap((participant: Participant) => this.drawService.sendResults([participant], creator).pipe(
+          flatMap((r) => r), // Map each response individually
+        )),
+        tap((response) => {
+          const config: Partial<NbToastrConfig> = { duration: 15000 };
+          if (response.success) {
+            this.toastrService.success(`Sent message to ${response.mailTo}`, 'Success', config);
+          } else {
+            this.toastrService.danger(`Error sending message to ${response.mailTo}: ${response.message}`, 'Error', config);
+          }
         })),
-      )),
+      ),
       takeWhile(() => this.alive),
+      toArray(),
+      tap(() => this.isSending = false),
+      tap(() => this.analyticsService.trackEvent('sentResults', {
+        event_category: AnalyticsCategories.SecretSantaGenerator,
+      })),
     ).subscribe();
   }
 
@@ -179,6 +198,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   canEmailResults(): Observable<boolean> {
+    if (this.isSending) {
+      return of(false);
+    }
+
     return this.isEditing.pipe(
       take(1),
       map((isEditing: boolean) => {
