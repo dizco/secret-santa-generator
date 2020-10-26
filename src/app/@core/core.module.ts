@@ -1,6 +1,6 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbAuthModule, NbOAuth2ResponseType } from '@nebular/auth';
+import { NB_AUTH_TOKEN_INTERCEPTOR_FILTER, NbAuthJWTInterceptor, NbAuthModule, NbOAuth2ResponseType } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 import { throwIfAlreadyLoaded } from './module-import-guard';
@@ -10,6 +10,7 @@ import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
 import { OktaAuthStrategy, OktaToken } from './auth/okta-auth-strategy';
 import { AuthWindowService } from './auth/auth-window.service';
 import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 const DATA_SERVICES = [
 ];
@@ -62,6 +63,8 @@ export const NB_CORE_PROVIDERS = [
   OktaAuthStrategy,
   AuthWindowService,
   NonDisruptiveAuthService,
+  { provide: HTTP_INTERCEPTORS, useClass: NbAuthJWTInterceptor, multi: true },
+  { provide: NB_AUTH_TOKEN_INTERCEPTOR_FILTER, useValue: (req) => false }, // Let everything through
 
   NbSecurityModule.forRoot({
     accessControl: {
