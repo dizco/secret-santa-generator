@@ -23,6 +23,7 @@ enum ResultsState {
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private alive = true;
+  private captchaResponse: string;
 
   private resultsViewEnabledSubject = new BehaviorSubject<boolean>(false);
   resultsViewEnabled: Observable<boolean> = this.resultsViewEnabledSubject.pipe(
@@ -139,6 +140,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  captchaResolved(captchaResponse: string): void {
+    this.captchaResponse = captchaResponse;
+  }
+
   sendResults(): void {
     this.analyticsService.trackEvent('sendResults', {
       event_category: AnalyticsCategories.SecretSantaGenerator,
@@ -165,7 +170,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       )),
       switchMap((creator: Participant) => of(this.participants).pipe(
         flatMap((p) => p), // Split the array
-        mergeMap((participant: Participant) => this.drawService.sendResults([participant], creator).pipe(
+        mergeMap((participant: Participant) => this.drawService.sendResults([participant], creator, this.captchaResponse).pipe(
           flatMap((r) => r), // Map each response individually
         )),
         tap((response) => {
@@ -197,7 +202,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   canEmailResults(): Observable<boolean> {
-    if (this.isSending) {
+    if (this.isSending || !this.captchaResponse) {
       return of(false);
     }
 
