@@ -14,12 +14,13 @@ export interface MailOptions {
 }
 
 export interface MailResponse {
-  success: true;
-  sentAt: string;
+  success: boolean;
+  message?: string;
+  mailTo: string;
 }
 
 interface Mail {
-  sentAt: string;
+  to: string;
 }
 
 @Injectable()
@@ -29,7 +30,8 @@ export class MailService {
   send(options: MailOptions): Observable<MailResponse> {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json',
+        'Content-Type':  'application/vnd.kiosoft.mailV1+json',
+        'Accept': 'application/vnd.kiosoft.mailV1+json',
       }),
     };
 
@@ -40,7 +42,7 @@ export class MailService {
         map(mail => {
           return {
             success: true,
-            sentAt: mail.sentAt,
+            mailTo: mail.to,
           } as MailResponse;
         }),
       );
