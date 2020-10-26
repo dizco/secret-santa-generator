@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
-import { BehaviorSubject, iif, Observable, of, zip } from 'rxjs';
+import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import { filter, flatMap, map, mergeMap, switchMap, take, takeWhile, tap, toArray } from 'rxjs/operators';
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
@@ -9,7 +9,6 @@ import { NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme
 import { ConfirmPromptComponent, ConfirmPromptResult } from './confirm-prompt.component';
 import { NbDialogConfig } from '@nebular/theme/components/dialog/dialog-config';
 import { OktaToken } from '../../@core/auth/okta-auth-strategy';
-import { MailResponse } from '../../@core/utils/mail.service';
 
 enum ResultsState {
   Hidden,
