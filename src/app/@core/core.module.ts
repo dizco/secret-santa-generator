@@ -11,7 +11,7 @@ import { OktaAuthStrategy, OktaToken } from './auth/okta-auth-strategy';
 import { AuthWindowService } from './auth/auth-window.service';
 import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RECAPTCHA_SETTINGS, RecaptchaModule, RecaptchaSettings } from 'ng-recaptcha';
+import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha';
 
 const DATA_SERVICES = [
 ];
