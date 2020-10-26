@@ -11,6 +11,7 @@ import { OktaAuthStrategy, OktaToken } from './auth/okta-auth-strategy';
 import { AuthWindowService } from './auth/auth-window.service';
 import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { RECAPTCHA_SETTINGS, RecaptchaModule, RecaptchaSettings } from 'ng-recaptcha';
 
 const DATA_SERVICES = [
 ];
@@ -79,10 +80,10 @@ export const NB_CORE_PROVIDERS = [
       },
     },
   }).providers,
-
   {
     provide: NbRoleProvider, useClass: NbSimpleRoleProvider,
   },
+  { provide: RECAPTCHA_SETTINGS, useValue: { siteKey: '6LcTbdsZAAAAAC6Xw6cK9KJCTsPo9lCS2N__U9t_' } as RecaptchaSettings },
   AnalyticsService,
   MailService,
   DrawService,

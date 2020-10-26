@@ -27,7 +27,7 @@ interface Mail {
 export class MailService {
   constructor(private http: HttpClient) {}
 
-  send(options: MailOptions): Observable<MailResponse> {
+  send(options: MailOptions, captchaResponse: string): Observable<MailResponse> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/vnd.kiosoft.mailV1+json',
@@ -35,7 +35,7 @@ export class MailService {
       }),
     };
 
-    return this.http.post<Mail>('http://localhost:8000/send', MailService.buildMailRequestBody(options), httpOptions)
+    return this.http.post<Mail>('http://localhost:8000/send', MailService.buildMailRequestBody(options, captchaResponse), httpOptions)
       .pipe(
         retry(1),
         catchError(MailService.handleError),
@@ -48,7 +48,7 @@ export class MailService {
       );
   }
 
-  private static buildMailRequestBody(options: MailOptions): any {
+  private static buildMailRequestBody(options: MailOptions, captchaResponse: string): any {
     return {
       to: options.to,
       from: {
@@ -59,6 +59,7 @@ export class MailService {
         header: options.message.header,
         body: options.message.body,
       },
+      captcha: captchaResponse,
     };
   }
 

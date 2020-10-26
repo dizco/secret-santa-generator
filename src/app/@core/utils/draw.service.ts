@@ -13,7 +13,7 @@ export interface Participant {
 export class DrawService {
   constructor(private mailService: MailService) {}
 
-  sendResults(participants: Participant[], creator: Participant): Observable<MailResponse[]> {
+  sendResults(participants: Participant[], creator: Participant, captchaResponse: string): Observable<MailResponse[]> {
     const tasks: Observable<MailResponse>[] = [];
     participants.forEach(participant => {
       tasks.push(this.mailService.send({
@@ -30,7 +30,7 @@ export class DrawService {
 <br> <a href="https://secretsantagenerator.kiosoft.ca/">secretsantagenerator.kiosoft.ca</a>`,
           // tslint:enable
         },
-      }).pipe(
+      }, captchaResponse).pipe(
         catchError((error) => {
           return of({
             success: false,

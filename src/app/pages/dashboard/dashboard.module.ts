@@ -16,6 +16,7 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { DashboardComponent } from './dashboard.component';
 import { FormsModule } from '@angular/forms';
 import { ConfirmPromptComponent } from './confirm-prompt.component';
+import { RecaptchaModule } from 'ng-recaptcha';
 
 @NgModule({
   imports: [
@@ -31,6 +32,7 @@ import { ConfirmPromptComponent } from './confirm-prompt.component';
     ThemeModule,
     NbDialogModule.forChild(),
     NbSpinnerModule,
+    RecaptchaModule,
   ],
   entryComponents: [
     ConfirmPromptComponent,
