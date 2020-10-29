@@ -23,7 +23,7 @@ enum ResultsState {
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private alive = true;
-  private captchaResponse: string;
+  private captchaResponse: string = 'turtle';
 
   private resultsViewEnabledSubject = new BehaviorSubject<boolean>(false);
   resultsViewEnabled: Observable<boolean> = this.resultsViewEnabledSubject.pipe(

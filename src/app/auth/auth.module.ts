@@ -5,7 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { NbAuthModule } from '@nebular/auth';
 import { CallbackComponent } from './callback/callback.component';
 import { NbAlertModule, NbLayoutModule } from '@nebular/theme';
-import { OktaAuthModule } from '@okta/okta-angular';
+import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client';
 
 @NgModule({
   imports: [
@@ -14,7 +14,10 @@ import { OktaAuthModule } from '@okta/okta-angular';
     ThemeModule,
     NbLayoutModule,
     NbAlertModule,
-    OktaAuthModule,
+    // OktaAuthModule,
+    // Auth0Module,
+    // Auth0Module,
+    // OidcAuthModule,
   ],
   declarations: [
     LoginComponent,

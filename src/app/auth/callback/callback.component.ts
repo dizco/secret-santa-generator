@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { getDeepFromObject, NB_AUTH_OPTIONS, NbAuthResult, NbAuthService } from '@nebular/auth';
 import { Subject } from 'rxjs';
-import { catchError, filter, map, takeUntil } from 'rxjs/operators';
+import { catchError, filter, map, takeUntil, tap } from 'rxjs/operators';
 import { AuthWindowService } from '../../@core/auth/auth-window.service';
 
 @Component({
@@ -27,9 +27,11 @@ export class CallbackComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.log('Strategy callback initiated');
     this.authService.authenticate(this.strategy)
       .pipe(
         takeUntil(this.destroy$),
+        tap((r) => console.log('Strategy callback result', r)),
         filter((authResult: NbAuthResult) => authResult.isSuccess()),
         map((authResult: NbAuthResult) => {
           return this.authWindowService.sendResult(authResult);
