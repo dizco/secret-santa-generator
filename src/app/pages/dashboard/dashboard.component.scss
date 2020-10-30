@@ -47,11 +47,23 @@
       max-width: 100%;
       width: 100%;
       background-color: nb-theme(card-background-color);
+
       // Only bottom border
       border-top: none;
       border-left: none;
       border-right: none;
       border-radius: unset;
+
+      // Prefer these styles...
+      border-color: transparent;
+      @each $status in nb-get-statuses() {
+        &.status-#{$status}:hover, &.status-#{$status}:active, &.status-#{$status}:focus {
+          border-color: nb-theme(input-#{$status}-border-color);
+        }
+      }
+      &:focus {
+        box-shadow: 0 0 0 0.375rem #e4e9f2;
+      }
     }
   }
 }
