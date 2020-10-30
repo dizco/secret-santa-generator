@@ -87,7 +87,7 @@ npm run e2e
 - Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
 
 ## ngx-admin
-This client is forked off of [ngx-admin](https://github.com/akveo/nebular) v4.0.1 :heart:.
+This client is forked off of [ngx-admin](https://github.com/akveo/nebular) v4.0.1 and up to date with v6.0.0 :heart:.
 
 <a target="_blank" href="http://akveo.com/ngx-admin/"><img src="https://i.imgur.com/iJu2YDF.png"/></a>
 
