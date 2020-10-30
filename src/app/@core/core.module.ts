@@ -4,7 +4,7 @@ import { NB_AUTH_TOKEN_INTERCEPTOR_FILTER, NbAuthJWTInterceptor, NbAuthModule, N
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 import { throwIfAlreadyLoaded } from './module-import-guard';
-import { AnalyticsService, DrawService, MailService } from './utils';
+import { AnalyticsService, DrawService, LayoutService, MailService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
 import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
 import { OktaAuthStrategy, OktaToken } from './auth/okta-auth-strategy';
@@ -85,6 +85,7 @@ export const NB_CORE_PROVIDERS = [
   },
   { provide: RECAPTCHA_SETTINGS, useValue: { siteKey: '6LcTbdsZAAAAAC6Xw6cK9KJCTsPo9lCS2N__U9t_' } as RecaptchaSettings },
   AnalyticsService,
+  LayoutService,
   MailService,
   DrawService,
 ];
@@ -104,8 +105,8 @@ export class CoreModule {
     throwIfAlreadyLoaded(parentModule, 'CoreModule');
   }
 
-  static forRoot(): ModuleWithProviders {
-    return <ModuleWithProviders>{
+  static forRoot(): ModuleWithProviders<CoreModule> {
+    return {
       ngModule: CoreModule,
       providers: [
         ...NB_CORE_PROVIDERS,

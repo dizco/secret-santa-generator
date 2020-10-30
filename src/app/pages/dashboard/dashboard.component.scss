@@ -3,17 +3,22 @@
 @import '~bootstrap/scss/mixins/breakpoints';
 
 @include nb-install-component() {
+  button[nbButton] {
+    margin-left: 0.5rem;
+  }
+
+  nb-list-item > .row {
+    width: 100%;
+  }
+
   .draw-participant-card {
     width: 100%;
-    display: flex;
-    justify-content: flex-start;
-
     line-height: 1rem;
     font-family: nb-theme(button-text-font-family);
     font-weight: nb-theme(button-text-font-weight);
     border-radius: nb-theme(border-radius);
 
-    background-color: nb-theme(button-outline-background-color);
+    background-color: nb-theme(button-outline-primary-background-color);
     border-style: nb-theme(button-outline-border-style);
     border-width: nb-theme(button-outline-border-width);
 

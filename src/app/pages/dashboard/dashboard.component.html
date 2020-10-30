@@ -4,16 +4,16 @@
       <nb-card-body>
         <div class="row">
           <div class="col-12 d-flex justify-content-end">
-            <button nbButton ghost status="success" size="small" [disabled]="!(isEditing | async)" (click)="addParticipant()" nbTooltip="Add participant"><nb-icon icon="plus"></nb-icon></button>
+            <button nbButton ghost status="success" [disabled]="!(isEditing | async)" (click)="addParticipant()" nbTooltip="Add participant"><nb-icon icon="plus"></nb-icon></button>
             <ng-container>
-              <button *ngIf="resultsViewEnabled | async" nbButton ghost status="primary" size="small" (click)="disableResultsView()" nbTooltip="Hide results"><nb-icon icon="eye-outline"></nb-icon></button>
-              <button *ngIf="!(resultsViewEnabled | async)" nbButton ghost status="primary" size="small" (click)="enableResultsView()" nbTooltip="View results"><nb-icon icon="eye-off-outline"></nb-icon></button>
+              <button *ngIf="resultsViewEnabled | async" nbButton ghost status="primary" (click)="disableResultsView()" nbTooltip="Hide results"><nb-icon icon="eye-outline"></nb-icon></button>
+              <button *ngIf="!(resultsViewEnabled | async)" nbButton ghost status="primary" (click)="enableResultsView()" nbTooltip="View results"><nb-icon icon="eye-off-outline"></nb-icon></button>
             </ng-container>
             <ng-container>
-              <button *ngIf="!(isEditing | async)" nbButton ghost status="primary" size="small" (click)="enterEditMode()" nbTooltip="Edit draw"><nb-icon icon="edit"></nb-icon></button>
-              <button *ngIf="isEditing | async" nbButton ghost status="primary" size="small" (click)="save()" nbTooltip="Save and generate"><nb-icon icon="save"></nb-icon></button>
+              <button *ngIf="!(isEditing | async)" nbButton ghost status="primary" (click)="enterEditMode()" nbTooltip="Edit draw"><nb-icon icon="edit"></nb-icon></button>
+              <button *ngIf="isEditing | async" nbButton ghost status="primary" (click)="save()" nbTooltip="Save and generate"><nb-icon icon="save"></nb-icon></button>
             </ng-container>
-            <button nbButton ghost status="primary" size="small" [disabled]="isEditing | async" (click)="regenerate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
+            <button nbButton ghost status="primary" [disabled]="isEditing | async" (click)="regenerate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
           </div>
         </div>
         <nb-list>
@@ -36,7 +36,7 @@
                       </ng-container>
                     </div>
                     <div class="col-2 mt-3 mt-sm-0 d-flex justify-content-center align-items-center">
-                      <button *ngIf="isEditing | async" nbButton ghost status="danger" size="small" (click)="removeParticipant(participant)" nbTooltip="Remove participant"><nb-icon icon="trash"></nb-icon></button>
+                      <button *ngIf="isEditing | async" nbButton ghost status="danger" (click)="removeParticipant(participant)" nbTooltip="Remove participant"><nb-icon icon="trash"></nb-icon></button>
                     </div>
                   </div>
                 </div>
