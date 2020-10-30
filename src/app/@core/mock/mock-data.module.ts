@@ -13,8 +13,8 @@ const SERVICES = [
   ],
 })
 export class MockDataModule {
-  static forRoot(): ModuleWithProviders {
-    return <ModuleWithProviders>{
+  static forRoot(): ModuleWithProviders<MockDataModule> {
+    return {
       ngModule: MockDataModule,
       providers: [
         ...SERVICES,
