@@ -169,9 +169,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         map((token: OktaToken) => ({ name: token.user.name, email: token.user.email } as Participant)),
       )),
       switchMap((creator: Participant) => of(this.participants).pipe(
-        flatMap((p) => p), // Split the array
+        mergeMap((p) => p), // Split the array
         mergeMap((participant: Participant) => this.drawService.sendResults([participant], creator, this.captchaResponse).pipe(
-          flatMap((r) => r), // Map each response individually
+          mergeMap((r) => r), // Map each response individually
         )),
         tap((response) => {
           const config: Partial<NbToastrConfig> = { duration: 15000 };

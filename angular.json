@@ -37,6 +37,11 @@
             ],
             "scripts": [
               "node_modules/pace-js/pace.min.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "zrender/lib/svg/svg",
+              "zrender/lib/vml/vml"
             ]
           },
           "configurations": {
