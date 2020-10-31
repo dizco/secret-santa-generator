@@ -12,6 +12,7 @@ import { AuthWindowService } from './auth/auth-window.service';
 import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha';
+import { Auth0AuthStrategy, Auth0JWTToken } from './auth/auth0-auth-strategy';
 
 const DATA_SERVICES = [
 ];
@@ -51,17 +52,28 @@ export const NB_CORE_PROVIDERS = [
           class: OktaToken,
         },
       }),
+      Auth0AuthStrategy.setup({ // Uses Okta's Auth service under the hood
+        name: 'auth0',
+        clientId: '',
+        authorize: {
+          responseType: NbOAuth2ResponseType.CODE,
+        },
+        token: {
+          class: Auth0JWTToken,
+        },
+      }),
     ],
     forms: {
       login: {
-        strategy: 'okta',
+        strategy: 'auth0',
       },
       logout: {
-        strategy: 'okta',
+        strategy: 'auth0',
       },
     },
   }).providers,
   OktaAuthStrategy,
+  Auth0AuthStrategy,
   AuthWindowService,
   NonDisruptiveAuthService,
   { provide: HTTP_INTERCEPTORS, useClass: NbAuthJWTInterceptor, multi: true },
