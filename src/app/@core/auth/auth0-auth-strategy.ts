@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
-import { forkJoin, from, Observable, of as observableOf } from 'rxjs';
-import { map, switchMap, catchError, mapTo } from 'rxjs/operators';
+import { forkJoin, from, Observable, of, of as observableOf, throwError } from 'rxjs';
+import { map, switchMap, catchError, mapTo, tap } from 'rxjs/operators';
 import {
   NbOAuth2AuthStrategy,
   NbOAuth2ResponseType,
@@ -14,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 import { NB_WINDOW } from '@nebular/theme';
 import { ActivatedRoute } from '@angular/router';
 import { OktaAuthService, UserClaims } from '@okta/okta-angular';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 export interface Auth0Token {
   user: UserClaims;
@@ -40,15 +41,23 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
 
   protected redirectResultHandlers: { [key: string]: Function } = {
     [NbOAuth2ResponseType.CODE]: () => {
-      return from(this.oktaAuth.handleAuthentication())
+      return this.oidcService.checkAuth()
         .pipe(
-          switchMap(() => {
-            return forkJoin({
-              user: this.oktaAuth.getUser(),
-              idToken: this.oktaAuth.getIdToken(),
-              accessToken: this.oktaAuth.getAccessToken(),
-            }) as Observable<Auth0Token>;
+          tap((r) => console.log('In strategy, received authorize callback', r)),
+          switchMap((isAuthenticated) => {
+            if (isAuthenticated) {
+              return of();
+            }
+            return throwError('Authentication error');
           }),
+          switchMap(() => this.oidcService.userData$),
+          tap((r) => console.log('forkjoin', r)),
+          map((user) => ({
+            user,
+            idToken: this.oidcService.getIdToken(),
+            accessToken: this.oidcService.getToken(),
+          } as Auth0Token)),
+          tap((r) => console.log('mapped', r)),
           map((res) => {
             return new NbAuthResult(
               true,
@@ -78,7 +87,7 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
 
   constructor(protected http: HttpClient,
               protected route: ActivatedRoute,
-              protected oktaAuth: OktaAuthService,
+              protected oidcService: OidcSecurityService,
               @Inject(NB_WINDOW) protected window: any) {
     super(http, route, window);
   }
@@ -88,7 +97,7 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
       .pipe(
         switchMap((result: boolean) => {
           if (!result) {
-            this.oktaAuth.login();
+            this.oidcService.authorize();
             return observableOf(new NbAuthResult(true));
           }
           return this.getAuthorizationResult();
@@ -97,8 +106,7 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
   }
 
   logout(): Observable<NbAuthResult> {
-    return from(this.oktaAuth.logout()).pipe(
-      mapTo(new NbAuthResult(true)),
-    );
+    this.oidcService.logoff();
+    return of(new NbAuthResult(true));
   }
 }
