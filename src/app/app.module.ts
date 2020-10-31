@@ -22,7 +22,7 @@ import {
 } from '@nebular/theme';
 import { GtagModule } from 'angular-gtag';
 import { environment } from '../environments/environment';
-import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client/lib/auth.module';
+import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client';
 import { LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
