@@ -25,21 +25,6 @@ import { environment } from '../environments/environment';
 import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client/lib/auth.module';
 import { LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 
-export function configureAuth(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
-      stsServer: 'https://kiosoft.us.auth0.com',
-      redirectUrl: 'http://localhost:4200/auth/callback',
-      postLogoutRedirectUri: window.location.origin,
-      clientId: 'ep5L66yITa00GusNRe06xptZdz1y6fiz',
-      scope: 'openid profile email',
-      responseType: 'code',
-      // silentRenew: true,
-      // silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-      logLevel: LogLevel.Debug,
-    });
-}
-
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -60,20 +45,10 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
     }),
     CoreModule.forRoot(),
-    OidcAuthModule.forRoot(),
     GtagModule.forRoot({
       trackingId: environment.analytics.trackingId,
       trackPageviews: false,
     }),
-  ],
-  providers: [
-    OidcConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: configureAuth,
-      deps: [OidcConfigService],
-      multi: true,
-    },
   ],
   bootstrap: [AppComponent],
 })

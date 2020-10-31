@@ -1,4 +1,4 @@
-import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
+import { APP_INITIALIZER, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NB_AUTH_TOKEN_INTERCEPTOR_FILTER, NbAuthJWTInterceptor, NbAuthModule, NbOAuth2ResponseType } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
@@ -13,6 +13,8 @@ import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha';
 import { Auth0AuthStrategy, Auth0JWTToken } from './auth/auth0-auth-strategy';
+import { LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client';
 
 const DATA_SERVICES = [
 ];
@@ -32,6 +34,23 @@ const config = {
   pkce: true,
 };
 
+export function configureAuth(oidcConfigService: OidcConfigService) {
+  return () => {
+    console.log('configuring auth', oidcConfigService);
+    return oidcConfigService.withConfig({
+      stsServer: 'https://kiosoft.us.auth0.com',
+      redirectUrl: 'http://localhost:4200/auth/callback',
+      postLogoutRedirectUri: window.location.origin,
+      clientId: 'ep5L66yITa00GusNRe06xptZdz1y6fiz',
+      scope: 'openid profile email',
+      responseType: 'code',
+      // silentRenew: true,
+      // silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+      logLevel: LogLevel.Debug,
+    });
+  }
+}
+
 export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
   ...DATA_SERVICES,
@@ -39,6 +58,14 @@ export const NB_CORE_PROVIDERS = [
   OktaAuthModule,
   {
     provide: OKTA_CONFIG, useValue: config,
+  },
+  // ...OidcAuthModule.forRoot().providers,
+  OidcConfigService,
+  {
+    provide: APP_INITIALIZER,
+    useFactory: configureAuth,
+    deps: [OidcConfigService],
+    multi: true,
   },
   ...NbAuthModule.forRoot({
     strategies: [
@@ -106,6 +133,7 @@ export const NB_CORE_PROVIDERS = [
   imports: [
     CommonModule,
     OktaAuthModule,
+    OidcAuthModule.forRoot(),
   ],
   exports: [
     NbAuthModule,
@@ -118,6 +146,7 @@ export class CoreModule {
   }
 
   static forRoot(): ModuleWithProviders<CoreModule> {
+    console.log('module for root', this);
     return {
       ngModule: CoreModule,
       providers: [
