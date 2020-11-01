@@ -40,7 +40,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
     return oidcConfigService.withConfig({
       stsServer: 'https://kiosoft.us.auth0.com',
       redirectUrl: 'http://localhost:4200/auth/callback',
-      postLogoutRedirectUri: window.location.origin,
+      postLogoutRedirectUri: 'http://localhost:4200/auth/logout/callback',
       clientId: 'HKTkPebbbQs9maBWyFTkPyq3AT8Ki0JM',
       scope: 'openid profile email',
       responseType: 'code',
@@ -146,7 +146,6 @@ export class CoreModule {
   }
 
   static forRoot(): ModuleWithProviders<CoreModule> {
-    console.log('module for root', this);
     return {
       ngModule: CoreModule,
       providers: [

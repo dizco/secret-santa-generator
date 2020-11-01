@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
-import { forkJoin, from, Observable, of, of as observableOf, throwError } from 'rxjs';
-import { map, switchMap, catchError, mapTo, tap } from 'rxjs/operators';
+import { Observable, of, of as observableOf, throwError } from 'rxjs';
+import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import {
   NbOAuth2AuthStrategy,
   NbOAuth2ResponseType,
@@ -10,11 +10,11 @@ import {
   NbAuthResult,
   auth2StrategyOptions,
 } from '@nebular/auth';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { NB_WINDOW } from '@nebular/theme';
 import { ActivatedRoute } from '@angular/router';
-import { OktaAuthService, UserClaims } from '@okta/okta-angular';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { UserClaims } from '@okta/okta-angular';
+import { OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 
 export interface Auth0Token {
   user: UserClaims;
@@ -98,8 +98,11 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
           if (!result) {
             this.oidcService.authorize({
               customParams: {
+                // Audience is required if we want to receive JWT tokens.
+                // If not sent, we receive opaque access tokens.
+                // See https://auth0.com/docs/api/authentication#authorization-code-flow-with-pkce
                 audience: 'kiosoft.mailserver',
-                prompt: 'login',
+                // prompt: 'login',
               },
             });
             return observableOf(new NbAuthResult(true));
@@ -110,7 +113,39 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
   }
 
   logout(): Observable<NbAuthResult> {
+    // Auth0 does not expose end_session_endpoint in the discovery document (sadly they're not spec compliant), so we must do it manually.
+    // First we will logoff locally, then we will navigate to auth0 to finish the logout
+
     this.oidcService.logoff();
+
+    // Leave this check for future proofing if every auth0 exposes end_session
+    if (!this.oidcService.configuration.wellknown.endSessionEndpoint) {
+      // No end session was set, craft our own logout url
+      this.window.location.href = Auth0AuthStrategy.buildLogoutUrl(this.oidcService.configuration);
+    }
+
     return of(new NbAuthResult(true));
+  }
+
+  /**
+   * @see https://auth0.com/docs/api/authentication#logout
+   */
+  private static buildLogoutUrl(config: PublicConfiguration): string {
+    let logoutUrl = Auth0AuthStrategy.ensureTrailingSlash(config.configuration.stsServer) + 'v2/logout';
+
+    let params = new HttpParams();
+    params = params.set('client_id', config.configuration.clientId);
+
+    if (config.configuration.postLogoutRedirectUri) {
+      params = params.append('returnTo', config.configuration.postLogoutRedirectUri);
+    }
+
+    logoutUrl += `?${params}`;
+
+    return logoutUrl;
+  }
+
+  private static ensureTrailingSlash(str: string): string {
+    return str.endsWith('/') ? str : str + '/';
   }
 }
