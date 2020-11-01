@@ -75,13 +75,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.authService.getToken().pipe(
-      take(1),
-      filter((token) => token.isValid()),
-    ).subscribe(token => {
-      this.user = (token.getPayload() as PreferredTokenPayloadType).user;
-    });
-
     this.authService.onTokenChange().pipe(
       takeUntil(this.destroy$),
     ).subscribe(token => {
