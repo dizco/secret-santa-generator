@@ -41,7 +41,7 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       stsServer: 'https://kiosoft.us.auth0.com',
       redirectUrl: 'http://localhost:4200/auth/callback',
       postLogoutRedirectUri: window.location.origin,
-      clientId: 'ep5L66yITa00GusNRe06xptZdz1y6fiz',
+      clientId: 'HKTkPebbbQs9maBWyFTkPyq3AT8Ki0JM',
       scope: 'openid profile email',
       responseType: 'code',
       // silentRenew: true,

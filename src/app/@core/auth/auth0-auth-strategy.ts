@@ -46,11 +46,10 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
           tap((r) => console.log('In strategy, received authorize callback', r)),
           switchMap((isAuthenticated) => {
             if (isAuthenticated) {
-              return of();
+              return this.oidcService.userData$;
             }
             return throwError('Authentication error');
           }),
-          switchMap(() => this.oidcService.userData$),
           tap((r) => console.log('forkjoin', r)),
           map((user) => ({
             user,
@@ -97,7 +96,12 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
       .pipe(
         switchMap((result: boolean) => {
           if (!result) {
-            this.oidcService.authorize();
+            this.oidcService.authorize({
+              customParams: {
+                audience: 'kiosoft.mailserver',
+                prompt: 'login',
+              },
+            });
             return observableOf(new NbAuthResult(true));
           }
           return this.getAuthorizationResult();
