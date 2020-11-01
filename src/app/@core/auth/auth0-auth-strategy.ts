@@ -18,9 +18,9 @@ import { OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-clie
 export interface Auth0Claims {
   email: string;
   email_verified: boolean;
-  family_name: string;
-  given_name: string;
-  locale: string;
+  family_name?: string;
+  given_name?: string;
+  locale?: string;
   name: string;
   nickname: string;
   picture: string;
