@@ -34,6 +34,7 @@ export class NonDisruptiveAuthService implements OnDestroy {
     // TODO: Better error handling, what happens if someone times out, or if someone closes the page?
     return subject.pipe(
       takeWhile(() => this.alive),
+      // TODO: Could we do the change detection here? Maybe with ApplicationRef or something...
     );
   }
 }
