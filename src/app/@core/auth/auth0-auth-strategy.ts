@@ -55,20 +55,17 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
     [NbOAuth2ResponseType.CODE]: () => {
       return this.oidcService.checkAuth()
         .pipe(
-          tap((r) => console.log('In strategy, received authorize callback', r)),
           switchMap((isAuthenticated) => {
             if (isAuthenticated) {
               return this.oidcService.userData$;
             }
             return throwError('Authentication error');
           }),
-          tap((r) => console.log('forkjoin', r)),
           map((user) => ({
             user,
             idToken: this.oidcService.getIdToken(),
             accessToken: this.oidcService.getToken(),
           } as Auth0Token)),
-          tap((r) => console.log('mapped', r)),
           map((res) => {
             return new NbAuthResult(
               true,
@@ -131,7 +128,6 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
 
     return this.isLogoutRedirect().pipe(
       switchMap((isRedirect) => {
-        console.log('is redirect', isRedirect);
         if (!isRedirect) {
           this.performLogout();
         }
