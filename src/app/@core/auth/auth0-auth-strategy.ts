@@ -8,16 +8,28 @@ import {
   NbOAuth2AuthStrategyOptions,
   NbAuthStrategyClass,
   NbAuthResult,
-  auth2StrategyOptions,
+  auth2StrategyOptions, NbTokenService, NbAuthToken,
 } from '@nebular/auth';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { NB_WINDOW } from '@nebular/theme';
 import { ActivatedRoute } from '@angular/router';
-import { UserClaims } from '@okta/okta-angular';
 import { OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
 
+export interface Auth0Claims {
+  email: string;
+  email_verified: boolean;
+  family_name: string;
+  given_name: string;
+  locale: string;
+  name: string;
+  nickname: string;
+  picture: string;
+  sub: string;
+  updated_at: string;
+}
+
 export interface Auth0Token {
-  user: UserClaims;
+  user: Auth0Claims;
   idToken: string;
   accessToken: string;
 }
