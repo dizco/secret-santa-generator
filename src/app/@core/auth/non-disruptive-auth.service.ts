@@ -37,6 +37,7 @@ export class NonDisruptiveAuthService implements OnDestroy {
     // TODO: Better error handling, what happens if someone times out, or if someone closes the page?
     return subject.pipe(
       takeWhile(() => this.alive),
+      // Since authentication happens in another tab, we must forcefully update our token service
       tap(() => this.tokenService.publishStoredToken()),
       // TODO: Could we do the change detection here? Maybe with ApplicationRef or something...
     );

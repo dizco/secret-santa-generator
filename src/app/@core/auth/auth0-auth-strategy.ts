@@ -138,15 +138,6 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
         return of(new NbAuthResult(true));
       }),
     );
-    /*return this.oidcService.checkAuth().pipe(
-      switchMap((isAuthenticated) => {
-        console.log('logout is authenticated', isAuthenticated);
-        if (isAuthenticated) {
-          this.performLogout();
-        }
-        return of(new NbAuthResult(true));
-      }),
-    );*/
   }
 
   private isLogoutRedirect(): Observable<boolean> {

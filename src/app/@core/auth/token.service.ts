@@ -8,7 +8,7 @@ export class TokenService extends NbTokenService {
     super(tokenStorage);
   }
 
-  // Expose publicly
+  // Expose publicly, because we want to be able to forcefully refresh our authentication subscribers
   publishStoredToken() {
     super.publishStoredToken();
   }

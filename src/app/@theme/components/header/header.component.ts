@@ -55,7 +55,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   currentTheme = 'default';
 
   userMenuTag = 'usermenu';
-  userMenu: UserMenuItem[] = [{ id: 'logout', title: 'Log out' }]; // TODO: logout needs to happen on non-disruptive window
+  userMenu: UserMenuItem[] = [{ id: 'logout', title: 'Log out' }];
 
   public constructor(
     private sidebarService: NbSidebarService,
