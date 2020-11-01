@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { NbAuthComponent, NbLogoutComponent } from '@nebular/auth';
 import { LoginComponent } from './login/login.component';
 import { LoginCallbackComponent } from './login/login-callback.component';
+import { LogoutCallbackComponent } from './logout/logout-callback.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
       {
         path: 'logout',
         component: NbLogoutComponent,
+      },
+      {
+        path: 'logout/callback',
+        component: LogoutCallbackComponent,
       },
     ],
   },

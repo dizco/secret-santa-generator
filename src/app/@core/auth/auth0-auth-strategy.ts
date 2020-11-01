@@ -113,6 +113,19 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
   }
 
   logout(): Observable<NbAuthResult> {
+    // Logout may be called from a logout callback
+    return this.oidcService.isAuthenticated$.pipe(
+      switchMap((isAuthenticated) => {
+        console.log('is authenticated', isAuthenticated);
+        if (isAuthenticated) {
+          this.performLogout();
+        }
+        return of(new NbAuthResult(true));
+      }),
+    );
+  }
+
+  private performLogout(): void {
     // Auth0 does not expose end_session_endpoint in the discovery document (sadly they're not spec compliant), so we must do it manually.
     // First we will logoff locally, then we will navigate to auth0 to finish the logout
 
@@ -123,8 +136,6 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
       // No end session was set, craft our own logout url
       this.window.location.href = Auth0AuthStrategy.buildLogoutUrl(this.oidcService.configuration);
     }
-
-    return of(new NbAuthResult(true));
   }
 
   /**

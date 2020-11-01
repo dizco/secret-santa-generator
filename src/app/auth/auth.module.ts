@@ -6,6 +6,7 @@ import { NbAuthModule } from '@nebular/auth';
 import { LoginCallbackComponent } from './login/login-callback.component';
 import { NbAlertModule, NbLayoutModule } from '@nebular/theme';
 import { OktaAuthModule } from '@okta/okta-angular';
+import { LogoutCallbackComponent } from './logout/logout-callback.component';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { OktaAuthModule } from '@okta/okta-angular';
   declarations: [
     LoginComponent,
     LoginCallbackComponent,
+    LogoutCallbackComponent,
   ],
 })
 export class AuthModule {
