@@ -31,12 +31,12 @@ export class LogoutCallbackComponent implements OnInit, OnDestroy {
     // See: https://github.com/akveo/nebular/blob/v6.2.1/src/framework/auth/services/auth.service.ts#L143
     this.authService.logout(this.strategy)
       .pipe(
-        takeUntil(this.destroy$),
         filter((authResult: NbAuthResult) => authResult.isSuccess()),
         map((authResult: NbAuthResult) => {
           return this.authWindowService.sendResult(authResult);
         }),
         catchError((e) => this.error = e),
+        takeUntil(this.destroy$),
       )
       .subscribe(() => {
         this.authWindowService.finalize();

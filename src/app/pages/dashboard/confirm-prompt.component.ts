@@ -42,8 +42,8 @@ export class ConfirmPromptComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.nonDisruptiveAuthService.onAuthenticationChange().pipe(
-      takeWhile(() => this.alive),
       tap((isAuthenticated) => this.requireLogin = !isAuthenticated),
+      takeWhile(() => this.alive),
     ).subscribe();
   }
 
@@ -64,12 +64,12 @@ export class ConfirmPromptComponent implements OnInit, OnDestroy {
   login(): void {
     this.isAuthenticating = true;
     this.nonDisruptiveAuthService.authenticate().pipe(
-      takeWhile(() => this.alive),
       tap((authResult: NbAuthResult) => {
         if (!authResult.isSuccess()) {
           this.errors = authResult.getErrors();
         }
       }),
+      takeWhile(() => this.alive),
     ).subscribe(() => {
       this.isAuthenticating = false;
 

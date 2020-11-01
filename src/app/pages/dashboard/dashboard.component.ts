@@ -27,8 +27,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private resultsViewEnabledSubject = new BehaviorSubject<boolean>(false);
   resultsViewEnabled: Observable<boolean> = this.resultsViewEnabledSubject.pipe(
-    takeWhile(() => this.alive),
     map(v => v),
+    takeWhile(() => this.alive),
   );
 
   private isEditingSubject = new BehaviorSubject<boolean>(true);
@@ -74,8 +74,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     this.isEditing.pipe(
-      takeWhile(() => this.alive),
       filter((value) => !value), // Only when isEditing becomes false
+      takeWhile(() => this.alive),
     ).subscribe(() => {
       this.generate();
     });

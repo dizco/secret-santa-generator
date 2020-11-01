@@ -29,12 +29,12 @@ export class LoginCallbackComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.authenticate(this.strategy)
       .pipe(
-        takeUntil(this.destroy$),
         filter((authResult: NbAuthResult) => authResult.isSuccess()),
         map((authResult: NbAuthResult) => {
           return this.authWindowService.sendResult(authResult);
         }),
         catchError((e) => this.error = e),
+        takeUntil(this.destroy$),
       )
       .subscribe(() => {
         this.authWindowService.finalize();

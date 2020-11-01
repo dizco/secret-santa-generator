@@ -86,7 +86,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
 
     this.menuService.onItemClick().pipe(
-      takeUntil(this.destroy$),
       filter((bag) => bag.tag === this.userMenuTag),
       map((bag) => bag.item as UserMenuItem),
       concatMap((item) => {
@@ -95,6 +94,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
         return of(); // Unhandled
       }),
+      takeUntil(this.destroy$),
     ).subscribe(() => {
       // Since we open a new tab, our app freezes and stops detecting changes until a click on the page happens
       // To bypass this UX problem, we force a manual change detection
