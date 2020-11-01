@@ -12,7 +12,7 @@ import { AuthWindowService } from './auth/auth-window.service';
 import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha';
-import { Auth0AuthStrategy, Auth0JWTToken } from './auth/auth0-auth-strategy';
+import { Auth0AuthStrategy, Auth0JWTToken, Auth0Token } from './auth/auth0-auth-strategy';
 import { LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client';
 
@@ -35,9 +35,8 @@ const config = {
 };
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
-  return () => {
-    console.log('configuring auth', oidcConfigService);
-    return oidcConfigService.withConfig({
+  return () =>
+    oidcConfigService.withConfig({
       stsServer: 'https://kiosoft.us.auth0.com',
       redirectUrl: 'http://localhost:4200/auth/callback',
       postLogoutRedirectUri: 'http://localhost:4200/auth/logout/callback',
@@ -48,8 +47,9 @@ export function configureAuth(oidcConfigService: OidcConfigService) {
       // silentRenewUrl: `${window.location.origin}/silent-renew.html`,
       logLevel: LogLevel.Debug,
     });
-  }
 }
+
+export type PreferredTokenPayloadType = Auth0Token;
 
 export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
@@ -59,7 +59,6 @@ export const NB_CORE_PROVIDERS = [
   {
     provide: OKTA_CONFIG, useValue: config,
   },
-  // ...OidcAuthModule.forRoot().providers,
   OidcConfigService,
   {
     provide: APP_INITIALIZER,
