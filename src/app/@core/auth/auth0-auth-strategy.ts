@@ -8,7 +8,7 @@ import {
   NbOAuth2AuthStrategyOptions,
   NbAuthStrategyClass,
   NbAuthResult,
-  auth2StrategyOptions, NbTokenService, NbAuthToken,
+  auth2StrategyOptions,
 } from '@nebular/auth';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { NB_WINDOW } from '@nebular/theme';
@@ -129,15 +129,28 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
     // 2nd logout from Auth0
     // 3rd, on callback, logout from NbAuthService
 
-    return this.oidcService.isAuthenticated$.pipe(
-      switchMap((isAuthenticated) => {
-        console.log('is authenticated', isAuthenticated);
-        if (isAuthenticated) {
+    return this.isLogoutRedirect().pipe(
+      switchMap((isRedirect) => {
+        console.log('is redirect', isRedirect);
+        if (!isRedirect) {
           this.performLogout();
         }
         return of(new NbAuthResult(true));
       }),
     );
+    /*return this.oidcService.checkAuth().pipe(
+      switchMap((isAuthenticated) => {
+        console.log('logout is authenticated', isAuthenticated);
+        if (isAuthenticated) {
+          this.performLogout();
+        }
+        return of(new NbAuthResult(true));
+      }),
+    );*/
+  }
+
+  private isLogoutRedirect(): Observable<boolean> {
+    return of(this.window.location.href === this.oidcService.configuration.configuration.postLogoutRedirectUri);
   }
 
   private performLogout(): void {

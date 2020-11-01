@@ -1,14 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { NbMenuItem, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
-import { filter, map, take, takeUntil, tap } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
+import { concatMap, filter, map, take, takeUntil, tap } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
 import { RippleService } from '../../../@core/utils/ripple.service';
 import { LayoutService } from '../../../@core/utils';
 import { NbAuthService } from '@nebular/auth';
 import { PreferredTokenPayloadType } from '../../../@core/core.module';
+import { NonDisruptiveAuthService } from '../../../@core/auth/non-disruptive-auth.service';
 
-class UserData {
+export declare abstract class UserMenuItem extends NbMenuItem {
+  id: string;
 }
 
 @Component({
@@ -52,7 +54,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   currentTheme = 'default';
 
-  userMenu = [ { title: 'Log out', link: '/auth/logout' } ]; // TODO: logout needs to happen on non-disruptive window
+  userMenuTag = 'usermenu';
+  userMenu: UserMenuItem[] = [{ id: 'logout', title: 'Log out' }]; // TODO: logout needs to happen on non-disruptive window
 
   public constructor(
     private sidebarService: NbSidebarService,
@@ -61,6 +64,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private layoutService: LayoutService,
     private rippleService: RippleService,
     private authService: NbAuthService,
+    private nonDisruptiveAuthService: NonDisruptiveAuthService,
+    private changeDetector: ChangeDetectorRef,
   ) {
     this.materialTheme$ = this.themeService.onThemeChange()
       .pipe(map(theme => {
@@ -85,6 +90,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
       } else {
         this.user = undefined;
       }
+    });
+
+    this.menuService.onItemClick().pipe(
+      takeUntil(this.destroy$),
+      filter((bag) => bag.tag === this.userMenuTag),
+      map((bag) => bag.item as UserMenuItem),
+      concatMap((item) => {
+        if (item.id === 'logout') {
+          return this.nonDisruptiveAuthService.authenticate('/auth/logout');
+        }
+        return of(); // Unhandled
+      }),
+    ).subscribe(() => {
+      // Since we open a new tab, our app freezes and stops detecting changes until a click on the page happens
+      // To bypass this UX problem, we force a manual change detection
+      this.changeDetector.detectChanges();
     });
 
     this.currentTheme = this.themeService.currentTheme;

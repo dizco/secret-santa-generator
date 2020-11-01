@@ -1,6 +1,6 @@
 import { APP_INITIALIZER, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NB_AUTH_TOKEN_INTERCEPTOR_FILTER, NbAuthJWTInterceptor, NbAuthModule, NbOAuth2ResponseType } from '@nebular/auth';
+import { NB_AUTH_TOKEN_INTERCEPTOR_FILTER, NbAuthJWTInterceptor, NbAuthModule, NbOAuth2ResponseType, NbTokenService } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 import { throwIfAlreadyLoaded } from './module-import-guard';
@@ -15,6 +15,7 @@ import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha';
 import { Auth0AuthStrategy, Auth0JWTToken, Auth0Token } from './auth/auth0-auth-strategy';
 import { LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client';
+import { TokenService } from './auth/token.service';
 
 const DATA_SERVICES = [
 ];
@@ -98,6 +99,8 @@ export const NB_CORE_PROVIDERS = [
       },
     },
   }).providers,
+  TokenService,
+  { provide: NbTokenService, useExisting: TokenService }, // override
   OktaAuthStrategy,
   Auth0AuthStrategy,
   AuthWindowService,
