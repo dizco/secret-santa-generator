@@ -3,7 +3,7 @@ import { ThemeModule } from '../@theme/theme.module';
 import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './login/login.component';
 import { NbAuthModule } from '@nebular/auth';
-import { CallbackComponent } from './callback/callback.component';
+import { LoginCallbackComponent } from './login/login-callback.component';
 import { NbAlertModule, NbLayoutModule } from '@nebular/theme';
 import { OktaAuthModule } from '@okta/okta-angular';
 
@@ -18,7 +18,7 @@ import { OktaAuthModule } from '@okta/okta-angular';
   ],
   declarations: [
     LoginComponent,
-    CallbackComponent,
+    LoginCallbackComponent,
   ],
 })
 export class AuthModule {

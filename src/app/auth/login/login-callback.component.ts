@@ -14,7 +14,7 @@ import { AuthWindowService } from '../../@core/auth/auth-window.service';
 })
 // Note: This class assumes that it is running in a separate window than the main window
 // Responsibility of creating the window is set on the component who triggers the login flow
-export class CallbackComponent implements OnInit, OnDestroy {
+export class LoginCallbackComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private strategy: string = '';
 
