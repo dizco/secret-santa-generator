@@ -125,7 +125,10 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
   }
 
   logout(): Observable<NbAuthResult> {
-    // Logout may be called from a logout callback
+    // 1st logout from OidcSecurityService level
+    // 2nd logout from Auth0
+    // 3rd, on callback, logout from NbAuthService
+
     return this.oidcService.isAuthenticated$.pipe(
       switchMap((isAuthenticated) => {
         console.log('is authenticated', isAuthenticated);

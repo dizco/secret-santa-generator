@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
-import { map, takeUntil } from 'rxjs/operators';
+import { filter, map, take, takeUntil, tap } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { RippleService } from '../../../@core/utils/ripple.service';
 import { LayoutService } from '../../../@core/utils';
+import { NbAuthService } from '@nebular/auth';
+import { PreferredTokenPayloadType } from '../../../@core/core.module';
 
 class UserData {
 }
@@ -17,6 +19,8 @@ class UserData {
 export class HeaderComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<void> = new Subject<void>();
+  userPictureOnly: boolean = false;
+  user: any;
   public readonly materialTheme$: Observable<boolean>;
 
   themes = [
@@ -48,12 +52,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   currentTheme = 'default';
 
+  userMenu = [ { title: 'Log out', link: '/auth/logout' } ]; // TODO: logout needs to happen on non-disruptive window
+
   public constructor(
     private sidebarService: NbSidebarService,
     private menuService: NbMenuService,
     private themeService: NbThemeService,
     private layoutService: LayoutService,
     private rippleService: RippleService,
+    private authService: NbAuthService,
   ) {
     this.materialTheme$ = this.themeService.onThemeChange()
       .pipe(map(theme => {
@@ -63,6 +70,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.authService.getToken().pipe(
+      take(1),
+      filter((token) => token.isValid()),
+    ).subscribe(token => {
+      this.user = (token.getPayload() as PreferredTokenPayloadType).user;
+    });
+
+    this.authService.onTokenChange().pipe(
+      takeUntil(this.destroy$),
+    ).subscribe(token => {
+      if (token.isValid()) {
+        this.user = (token.getPayload() as PreferredTokenPayloadType).user;
+      } else {
+        this.user = undefined;
+      }
+    });
+
     this.currentTheme = this.themeService.currentTheme;
 
     this.themeService.onThemeChange()
@@ -95,5 +119,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navigateHome() {
     this.menuService.navigateHome();
     return false;
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.user;
   }
 }
