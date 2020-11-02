@@ -41,8 +41,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private trackPageViews(): void {
     this.router.events
       .pipe(
-        takeWhile(() => this.alive),
         filter((event) => event instanceof NavigationEnd),
+        takeWhile(() => this.alive),
       )
       .subscribe(() => {
         this.analyticsService.trackPageView({
@@ -55,9 +55,9 @@ export class AppComponent implements OnInit, OnDestroy {
   private trackThemeChanges(): void {
     this.themeService.onThemeChange()
       .pipe(
-        takeWhile(() => this.alive),
         skip(1), // Skip initial theme setup
         map(({ name }) => name),
+        takeWhile(() => this.alive),
       )
       .subscribe(themeName => {
         this.analyticsService.trackEvent('changeTheme', {
@@ -70,8 +70,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private trackDirectionToggles(): void {
     this.directionService.onDirectionChange()
       .pipe(
-        takeWhile(() => this.alive),
         skip(1), // Skip initial direction setup
+        takeWhile(() => this.alive),
       )
       .subscribe(direction => {
         this.analyticsService.trackEvent('directionToggle', {
@@ -84,8 +84,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private trackSidebarToggles(): void {
     this.sidebarService.onToggle()
       .pipe(
-        takeWhile(() => this.alive),
         map((value) => value.tag),
+        takeWhile(() => this.alive),
       )
       .subscribe(tag => {
         this.analyticsService.trackEvent('sidebarToggle', {

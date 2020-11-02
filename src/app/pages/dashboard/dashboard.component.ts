@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ArrayHelper } from '../../@core/helpers/array-helper';
 import { BehaviorSubject, iif, Observable, of } from 'rxjs';
-import { filter, flatMap, map, mergeMap, switchMap, take, takeWhile, tap, toArray } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, take, takeWhile, tap, toArray } from 'rxjs/operators';
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 import { NbAuthService, NbAuthToken } from '@nebular/auth';
@@ -27,8 +27,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private resultsViewEnabledSubject = new BehaviorSubject<boolean>(false);
   resultsViewEnabled: Observable<boolean> = this.resultsViewEnabledSubject.pipe(
-    takeWhile(() => this.alive),
     map(v => v),
+    takeWhile(() => this.alive),
   );
 
   private isEditingSubject = new BehaviorSubject<boolean>(true);
@@ -74,8 +74,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     this.isEditing.pipe(
-      takeWhile(() => this.alive),
       filter((value) => !value), // Only when isEditing becomes false
+      takeWhile(() => this.alive),
     ).subscribe(() => {
       this.generate();
     });

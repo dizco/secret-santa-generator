@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { NbAuthResult } from '@nebular/auth';
 import { Observable } from 'rxjs';
@@ -23,7 +23,7 @@ interface ConfirmPromptDialogRef extends NbDialogRef<ConfirmPromptComponent> {
     }
   `],
 })
-export class ConfirmPromptComponent implements OnDestroy {
+export class ConfirmPromptComponent implements OnInit, OnDestroy {
   private alive = true;
   protected dialogRef: ConfirmPromptDialogRef;
 
@@ -34,9 +34,17 @@ export class ConfirmPromptComponent implements OnDestroy {
   drawParticipantsCount: number;
   requireLogin: boolean; // Context is injected dynamically by the NbDialogService
 
-  constructor(dialogRef: NbDialogRef<ConfirmPromptComponent>, private nonDisruptiveAuthService: NonDisruptiveAuthService,
+  constructor(dialogRef: NbDialogRef<ConfirmPromptComponent>,
+              private nonDisruptiveAuthService: NonDisruptiveAuthService,
               private changeDetector: ChangeDetectorRef) {
     this.dialogRef = dialogRef;
+  }
+
+  ngOnInit(): void {
+    this.nonDisruptiveAuthService.onAuthenticationChange().pipe(
+      tap((isAuthenticated) => this.requireLogin = !isAuthenticated),
+      takeWhile(() => this.alive),
+    ).subscribe();
   }
 
   ngOnDestroy() {
@@ -56,14 +64,12 @@ export class ConfirmPromptComponent implements OnDestroy {
   login(): void {
     this.isAuthenticating = true;
     this.nonDisruptiveAuthService.authenticate().pipe(
-      takeWhile(() => this.alive),
       tap((authResult: NbAuthResult) => {
-        if (authResult.isSuccess()) {
-          this.requireLogin = false;
-        } else {
+        if (!authResult.isSuccess()) {
           this.errors = authResult.getErrors();
         }
       }),
+      takeWhile(() => this.alive),
     ).subscribe(() => {
       this.isAuthenticating = false;
 
