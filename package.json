@@ -45,7 +45,6 @@
     "@nebular/eva-icons": "6.0.0",
     "@nebular/security": "6.0.0",
     "@nebular/theme": "6.0.0",
-    "@okta/okta-angular": "^2.2.1",
     "angular-auth-oidc-client": "^11.2.1",
     "angular-gtag": "^1.0.3",
     "bootstrap": "4.5.3",

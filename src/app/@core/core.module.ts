@@ -1,13 +1,18 @@
 import { APP_INITIALIZER, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NB_AUTH_TOKEN_INTERCEPTOR_FILTER, NbAuthJWTInterceptor, NbAuthModule, NbOAuth2ResponseType, NbTokenService } from '@nebular/auth';
+import {
+  NB_AUTH_TOKEN_INTERCEPTOR_FILTER,
+  NbAuthJWTInterceptor,
+  NbAuthModule,
+  NbOAuth2AuthStrategy,
+  NbOAuth2ResponseType,
+  NbTokenService
+} from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 import { throwIfAlreadyLoaded } from './module-import-guard';
 import { AnalyticsService, DrawService, LayoutService, MailService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
-import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
-import { OktaAuthStrategy, OktaToken } from './auth/okta-auth-strategy';
 import { AuthWindowService } from './auth/auth-window.service';
 import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -26,14 +31,6 @@ export class NbSimpleRoleProvider extends NbRoleProvider {
     return observableOf('guest');
   }
 }
-
-const config = {
-  clientId: '0oaf2qfvypHy6GuvL5d5',
-  issuer: 'https://dev-8656877.okta.com/oauth2/default',
-  redirectUri: 'http://localhost:4200/auth/callback',
-  scopes: ['openid', 'profile', 'email'],
-  pkce: true,
-};
 
 export function configureAuth(oidcConfigService: OidcConfigService) {
   return () =>
@@ -56,10 +53,6 @@ export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
   ...DATA_SERVICES,
 
-  OktaAuthModule,
-  {
-    provide: OKTA_CONFIG, useValue: config,
-  },
   OidcConfigService,
   {
     provide: APP_INITIALIZER,
@@ -69,17 +62,7 @@ export const NB_CORE_PROVIDERS = [
   },
   ...NbAuthModule.forRoot({
     strategies: [
-      OktaAuthStrategy.setup({ // Uses Okta's Auth service under the hood
-        name: 'okta',
-        clientId: '',
-        authorize: {
-          responseType: NbOAuth2ResponseType.CODE,
-        },
-        token: {
-          class: OktaToken,
-        },
-      }),
-      Auth0AuthStrategy.setup({ // Uses Okta's Auth service under the hood
+      Auth0AuthStrategy.setup({
         name: 'auth0',
         clientId: '',
         authorize: {
@@ -101,7 +84,6 @@ export const NB_CORE_PROVIDERS = [
   }).providers,
   TokenService,
   { provide: NbTokenService, useExisting: TokenService }, // override
-  OktaAuthStrategy,
   Auth0AuthStrategy,
   AuthWindowService,
   NonDisruptiveAuthService,
@@ -134,7 +116,6 @@ export const NB_CORE_PROVIDERS = [
 @NgModule({
   imports: [
     CommonModule,
-    OktaAuthModule,
     OidcAuthModule.forRoot(),
   ],
   exports: [
