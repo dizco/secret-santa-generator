@@ -117,7 +117,7 @@ stages:
         artifactName: $(ArtifactName)
         targetPath: $(Build.SourcesDirectory)/$(ArtifactName)
 
-    - task: FtpUpload@1
+    - task: FtpUpload@2
       displayName: 'FTP Upload: $(ArtifactName)'
       timeoutInMinutes: 5
       inputs:
