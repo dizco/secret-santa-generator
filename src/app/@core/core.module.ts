@@ -4,9 +4,8 @@ import {
   NB_AUTH_TOKEN_INTERCEPTOR_FILTER,
   NbAuthJWTInterceptor,
   NbAuthModule,
-  NbOAuth2AuthStrategy,
   NbOAuth2ResponseType,
-  NbTokenService
+  NbTokenService,
 } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
