@@ -150,7 +150,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
 
     this.authService.isAuthenticated().pipe(
-      tap((i) => console.log('is authenticated', i)),
       map((isAuthenticated) => {
         const config: Partial<NbDialogConfig<Partial<ConfirmPromptComponent> | string>> = {
           context: {
