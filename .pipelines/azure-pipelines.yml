@@ -14,7 +14,6 @@ stages:
   displayName: Build
   jobs:
   - job: ValidatePR
-    displayName: Validate PR
     condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
     - template: templates/print-environment-variables.yaml
@@ -70,7 +69,6 @@ stages:
         testResultsFiles: "**/junit*.xml"
 
   - job: Prod
-    displayName: Prod
     steps:
     - template: templates/print-environment-variables.yaml
 
