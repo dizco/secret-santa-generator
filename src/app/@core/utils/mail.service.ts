@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError, map, retry } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface MailOptions {
   from: string;
@@ -35,7 +36,8 @@ export class MailService {
       }),
     };
 
-    return this.http.post<Mail>('http://localhost:8000/send', MailService.buildMailRequestBody(options, captchaResponse), httpOptions)
+    const mailServerUrl = environment.mailServerUrl;
+    return this.http.post<Mail>(`${mailServerUrl}/send`, MailService.buildMailRequestBody(options, captchaResponse), httpOptions)
       .pipe(
         retry(1),
         catchError(MailService.handleError),
@@ -71,11 +73,11 @@ export class MailService {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong.
       console.error(
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
+        `Status code: ${error.status}, ` +
+        `details: ${error.error}`);
     }
     // Return an observable with a user-facing error message.
     return throwError(
-      'Something bad happened; please try again later.');
+      'Something unexpected happened; please try again later.');
   }
 }

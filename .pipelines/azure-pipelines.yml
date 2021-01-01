@@ -14,7 +14,6 @@ stages:
   displayName: Build
   jobs:
   - job: ValidatePR
-    displayName: Validate PR
     condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
     - template: templates/print-environment-variables.yaml
@@ -70,7 +69,6 @@ stages:
         testResultsFiles: "**/junit*.xml"
 
   - job: Prod
-    displayName: Prod
     steps:
     - template: templates/print-environment-variables.yaml
 
@@ -104,7 +102,7 @@ stages:
   displayName: Deploy
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
-  - group: Production variables
+  - group: kiosoft.ca-secrets
   jobs:
   - job: Prod
     displayName: Prod
@@ -117,14 +115,14 @@ stages:
         artifactName: $(ArtifactName)
         targetPath: $(Build.SourcesDirectory)/$(ArtifactName)
 
-    - task: FtpUpload@1
+    - task: FtpUpload@2
       displayName: 'FTP Upload: $(ArtifactName)'
       timeoutInMinutes: 5
       inputs:
         credentialsOption: inputs
         serverUrl: $(FtpServerUrl)
-        username: $(FtpUsername)
-        password: $(FtpPassword)
+        username: $(SecretSanta_FtpUsername)
+        password: $(SecretSanta_FtpPassword)
         rootDirectory: $(ArtifactName)
         remoteDirectory: /webapp/build/
         clean: true

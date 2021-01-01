@@ -8,7 +8,7 @@ import { NbAuthService, NbAuthToken } from '@nebular/auth';
 import { NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ConfirmPromptComponent, ConfirmPromptResult } from './confirm-prompt.component';
 import { NbDialogConfig } from '@nebular/theme/components/dialog/dialog-config';
-import { OktaToken } from '../../@core/auth/okta-auth-strategy';
+import { Auth0Token } from '../../@core/auth/auth0-auth-strategy';
 
 enum ResultsState {
   Hidden,
@@ -165,8 +165,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       filter((proceed: boolean) => proceed),
       tap(() => this.isSending = true),
       switchMap(() => this.authService.getToken().pipe(
-        map((token: NbAuthToken) => token.getPayload() as OktaToken),
-        map((token: OktaToken) => ({ name: token.user.name, email: token.user.email } as Participant)),
+        map((token: NbAuthToken) => token.getPayload() as Auth0Token),
+        map((token: Auth0Token) => ({ name: token.user.name, email: token.user.email } as Participant)),
       )),
       switchMap((creator: Participant) => of(this.participants).pipe(
         mergeMap((p) => p), // Split the array

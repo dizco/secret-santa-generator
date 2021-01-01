@@ -26,7 +26,7 @@ export class NonDisruptiveAuthService {
         subject.complete();
       },
     };
-    window.open(url);
+    this.window.open(url);
 
     // TODO: Better error handling, what happens if someone times out, or if someone closes the page?
     return subject.pipe(
