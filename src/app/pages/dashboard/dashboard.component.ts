@@ -23,7 +23,7 @@ enum ResultsState {
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private alive = true;
-  private captchaResponse: string = 'halloween';
+  private captchaResponse: string;
 
   private resultsViewEnabledSubject = new BehaviorSubject<boolean>(false);
   resultsViewEnabled: Observable<boolean> = this.resultsViewEnabledSubject.pipe(
@@ -166,7 +166,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       filter((proceed: boolean) => proceed),
       tap(() => this.isSending = true),
       switchMap(() => this.authService.getToken().pipe(
-        tap((t) => console.log('token', t)),
         map((token: NbAuthToken) => token.getPayload() as Auth0Token),
         map((token: Auth0Token) => ({ name: token.user.name, email: token.user.email } as Participant)),
       )),

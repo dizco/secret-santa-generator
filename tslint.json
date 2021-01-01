@@ -39,7 +39,7 @@
     "member-access": false,
     "no-arg": true,
     "no-console": [
-      false,
+      true,
       "debug",
       "log",
       "time",
