@@ -21,6 +21,7 @@ import { Auth0AuthStrategy, Auth0JWTToken, Auth0Token } from './auth/auth0-auth-
 import { LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
 import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client';
 import { TokenService } from './auth/token.service';
+import { environment } from '../../environments/environment';
 
 const DATA_SERVICES = [
 ];
@@ -35,10 +36,10 @@ export class NbSimpleRoleProvider extends NbRoleProvider {
 export function configureAuth(oidcConfigService: OidcConfigService) {
   return () =>
     oidcConfigService.withConfig({
-      stsServer: 'https://kiosoft.us.auth0.com',
-      redirectUrl: 'http://localhost:4200/auth/callback',
-      postLogoutRedirectUri: 'http://localhost:4200/auth/logout/callback',
-      clientId: 'HKTkPebbbQs9maBWyFTkPyq3AT8Ki0JM',
+      stsServer: environment.oidc.authority,
+      redirectUrl: `${window.location.origin}/auth/callback`,
+      postLogoutRedirectUri: `${window.location.origin}/auth/logout/callback`,
+      clientId: environment.oidc.clientId,
       scope: 'openid profile email',
       responseType: 'code',
       // silentRenew: true,

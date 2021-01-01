@@ -9,5 +9,10 @@ export const environment = {
     enabled: true,
     trackingId: 'UA-44227081-15',
   },
+  oidc: {
+    authority: 'https://kiosoft.us.auth0.com',
+    clientId: 'sfqzaCHN23kSo5TPjeTKHAu13hKPj86v',
+  },
+  mailServerUrl: 'https://mailserver.kiosoft.ca/send',
   appName: 'secret-santa-generator',
 };

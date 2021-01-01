@@ -104,7 +104,7 @@ stages:
   displayName: Deploy
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
-  - group: Production variables
+  - group: kiosoft.ca-secrets
   jobs:
   - job: Prod
     displayName: Prod
@@ -123,8 +123,8 @@ stages:
       inputs:
         credentialsOption: inputs
         serverUrl: $(FtpServerUrl)
-        username: $(FtpUsername)
-        password: $(FtpPassword)
+        username: $(SecretSanta_FtpUsername)
+        password: $(SecretSanta_FtpPassword)
         rootDirectory: $(ArtifactName)
         remoteDirectory: /webapp/build/
         clean: true
