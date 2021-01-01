@@ -18,6 +18,6 @@ export const environment = {
     authority: 'https://kiosoft.us.auth0.com',
     clientId: 'HKTkPebbbQs9maBWyFTkPyq3AT8Ki0JM',
   },
-  mailServerUrl: 'http://localhost:8000/send',
+  mailServerUrl: 'http://localhost:8000',
   appName: 'secret-santa-generator',
 };

@@ -13,6 +13,6 @@ export const environment = {
     authority: 'https://kiosoft.us.auth0.com',
     clientId: 'sfqzaCHN23kSo5TPjeTKHAu13hKPj86v',
   },
-  mailServerUrl: 'https://mailserver.kiosoft.ca/send',
+  mailServerUrl: 'https://mailserver.kiosoft.ca',
   appName: 'secret-santa-generator',
 };
