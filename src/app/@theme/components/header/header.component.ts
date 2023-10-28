@@ -1,9 +1,8 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { NbMenuItem, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
-import { concatMap, filter, map, take, takeUntil, tap } from 'rxjs/operators';
+import { concatMap, filter, map, takeUntil } from 'rxjs/operators';
 import { Observable, of, Subject } from 'rxjs';
-import { RippleService } from '../../../@core/utils/ripple.service';
 import { LayoutService } from '../../../@core/utils';
 import { NbAuthService } from '@nebular/auth';
 import { PreferredTokenPayloadType } from '../../../@core/core.module';
@@ -62,7 +61,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private menuService: NbMenuService,
     private themeService: NbThemeService,
     private layoutService: LayoutService,
-    private rippleService: RippleService,
     private authService: NbAuthService,
     private nonDisruptiveAuthService: NonDisruptiveAuthService,
     private changeDetector: ChangeDetectorRef,
@@ -108,10 +106,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         map(({ name }) => name),
         takeUntil(this.destroy$),
       )
-      .subscribe(themeName => {
-        this.currentTheme = themeName;
-        this.rippleService.toggle(themeName?.startsWith('material'));
-      });
+      .subscribe(themeName => this.currentTheme = themeName);
   }
 
   ngOnDestroy() {

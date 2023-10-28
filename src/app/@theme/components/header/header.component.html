@@ -1,28 +1,12 @@
 <div class="header-container">
   <div class="logo-container">
-    <a
-      href="#"
-      class="sidebar-toggle"
-      matRipple
-      [matRippleUnbounded]="true"
-      [matRippleCentered]="true"
-      (click)="toggleSidebar()"
-    >
-      <nb-icon [icon]="(materialTheme$ | async) ? 'menu-outline' : 'menu-2-outline'"></nb-icon>
+    <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
+      <nb-icon icon="menu-2-outline"></nb-icon>
     </a>
     <a class="logo" href="#" (click)="navigateHome()"><span>Secret Santa</span> generator</a>
   </div>
-  <nb-select
-    status="primary"
-    matRipple
-    [selected]="currentTheme"
-    (selectedChange)="changeTheme($event)"
-  >
-    <nb-option
-      *ngFor="let theme of themes"
-      [value]="theme.value"
-      matRipple
-    >{{ theme.name }}</nb-option>
+  <nb-select [selected]="currentTheme" (selectedChange)="changeTheme($event)" status="primary">
+    <nb-option *ngFor="let theme of themes" [value]="theme.value"> {{ theme.name }}</nb-option>
   </nb-select>
   <ngx-layout-direction-switcher class="direction-switcher"></ngx-layout-direction-switcher>
 </div>
