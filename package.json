@@ -16,7 +16,7 @@
     "build:prod": "npm run build -- --configuration production --aot",
     "test": "ng test",
     "test:coverage": "rimraf coverage && npm run test -- --code-coverage",
-    "test:once": "npm run test:coverage -- --no-watch",
+    "test:once": "npm run test:coverage -- --no-watch --browsers Chrome_ci",
     "lint": "ng lint",
     "lint:fix": "ng lint ngx-admin-demo --fix",
     "lint:styles": "stylelint ./src/**/*.scss",
