@@ -16,6 +16,11 @@ stages:
   - job: ValidatePR
     condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
+    - task: NodeTool@0
+      inputs:
+        versionSource: 'spec'
+        versionSpec: '14.x'
+
     - template: templates/print-environment-variables.yaml
 
     - task: Npm@1
