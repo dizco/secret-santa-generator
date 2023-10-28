@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
-import { Observable, of, of as observableOf, throwError } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { Observable, of as observableOf, throwError } from 'rxjs';
+import { map, switchMap, catchError, filter, tap } from 'rxjs/operators';
 import {
   NbOAuth2AuthStrategy,
   NbOAuth2ResponseType,
@@ -13,7 +13,7 @@ import {
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { NB_WINDOW } from '@nebular/theme';
 import { ActivatedRoute } from '@angular/router';
-import { OidcSecurityService, PublicConfiguration } from 'angular-auth-oidc-client';
+import { OidcSecurityService, OpenIdConfiguration, UserDataResult } from 'angular-auth-oidc-client';
 
 export interface Auth0Claims {
   email: string;
@@ -55,17 +55,19 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
     [NbOAuth2ResponseType.CODE]: () => {
       return this.oidcService.checkAuth()
         .pipe(
-          switchMap((isAuthenticated) => {
-            if (isAuthenticated) {
-              return this.oidcService.userData$;
+          switchMap((response) => {
+            if (response.isAuthenticated) {
+              return this.oidcService.userData$
+                .pipe(
+                  map((user: UserDataResult) => ({
+                    user: user.userData,
+                    idToken: response.idToken,
+                    accessToken: response.accessToken,
+                  } as Auth0Token)),
+                );
             }
             return throwError('Authentication error');
           }),
-          map((user) => ({
-            user,
-            idToken: this.oidcService.getIdToken(),
-            accessToken: this.oidcService.getToken(),
-          } as Auth0Token)),
           map((res) => {
             return new NbAuthResult(
               true,
@@ -105,7 +107,7 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
       .pipe(
         switchMap((result: boolean) => {
           if (!result) {
-            this.oidcService.authorize({
+            this.oidcService.authorize(null, {
               customParams: {
                 // Audience is required if we want to receive JWT tokens.
                 // If not sent, we receive opaque access tokens.
@@ -127,43 +129,45 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
     // 3rd, on callback, logout from NbAuthService
 
     return this.isLogoutRedirect().pipe(
-      switchMap((isRedirect) => {
-        if (!isRedirect) {
-          this.performLogout();
-        }
-        return of(new NbAuthResult(true));
-      }),
+      switchMap((isRedirect) => this.performLogout()),
+      map(() => new NbAuthResult(true)),
     );
   }
 
   private isLogoutRedirect(): Observable<boolean> {
-    return of(this.window.location.href === this.oidcService.configuration.configuration.postLogoutRedirectUri);
+    return this.oidcService.getConfiguration()
+      .pipe(
+        map((configuration => this.window.location.href === configuration.postLogoutRedirectUri)),
+      );
   }
 
-  private performLogout(): void {
+  private performLogout(): Observable<void> {
     // Auth0 does not expose end_session_endpoint in the discovery document (sadly they're not spec compliant), so we must do it manually.
-    // First we will logoff locally, then we will navigate to auth0 to finish the logout
+    // First we will logout locally, then we will navigate to auth0 to finish the logout
 
-    this.oidcService.logoff();
+    return this.oidcService.logoff()
+      .pipe(
+        switchMap(() => this.oidcService.getConfiguration()),
 
-    // Leave this check for future proofing if every auth0 exposes end_session
-    if (!this.oidcService.configuration.wellknown.endSessionEndpoint) {
-      // No end session was set, craft our own logout url
-      this.window.location.href = Auth0AuthStrategy.buildLogoutUrl(this.oidcService.configuration);
-    }
+        // Leave this check for future proofing if every auth0 exposes end_session
+        filter(configuration => !configuration.authWellknownEndpoints.endSessionEndpoint),
+        // No end session was set, craft our own logout url
+        tap((configuration: OpenIdConfiguration) => this.window.location.href = Auth0AuthStrategy.buildLogoutUrl(configuration)),
+        map(() => undefined),
+      );
   }
 
   /**
    * @see https://auth0.com/docs/api/authentication#logout
    */
-  private static buildLogoutUrl(config: PublicConfiguration): string {
-    let logoutUrl = Auth0AuthStrategy.ensureTrailingSlash(config.configuration.stsServer) + 'v2/logout';
+  private static buildLogoutUrl(config: OpenIdConfiguration): string {
+    let logoutUrl = Auth0AuthStrategy.ensureTrailingSlash(config.authority) + 'v2/logout';
 
     let params = new HttpParams();
-    params = params.set('client_id', config.configuration.clientId);
+    params = params.set('client_id', config.clientId);
 
-    if (config.configuration.postLogoutRedirectUri) {
-      params = params.append('returnTo', config.configuration.postLogoutRedirectUri);
+    if (config.postLogoutRedirectUri) {
+      params = params.append('returnTo', config.postLogoutRedirectUri);
     }
 
     logoutUrl += `?${params}`;

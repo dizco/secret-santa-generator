@@ -43,7 +43,7 @@
     "@nebular/eva-icons": "10.0.0",
     "@nebular/security": "10.0.0",
     "@nebular/theme": "10.0.0",
-    "angular-auth-oidc-client": "^11.3.0",
+    "angular-auth-oidc-client": "^15.0.5",
     "angular-gtag": "^1.0.3",
     "bootstrap": "4.5.3",
     "classlist.js": "1.1.20150312",

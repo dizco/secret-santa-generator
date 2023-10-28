@@ -5,7 +5,7 @@
  */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AnalyticsService } from './@core/utils';
-import { NbLayoutDirectionService, NbSidebarService, NbThemeService } from '@nebular/theme';
+import { NbSidebarService, NbThemeService } from '@nebular/theme';
 import { filter, map, skip, takeWhile } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
@@ -22,7 +22,6 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private analyticsService: AnalyticsService,
               private sidebarService: NbSidebarService,
               private themeService: NbThemeService,
-              private directionService: NbLayoutDirectionService,
               private location: Location,
               private router: Router) {
   }
@@ -30,7 +29,6 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.trackPageViews();
     this.trackThemeChanges();
-    this.trackDirectionToggles();
     this.trackSidebarToggles();
   }
 
@@ -63,20 +61,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.analyticsService.trackEvent('changeTheme', {
           event_category: AnalyticsCategories.Customization,
           event_label: themeName,
-        });
-      });
-  }
-
-  private trackDirectionToggles(): void {
-    this.directionService.onDirectionChange()
-      .pipe(
-        skip(1), // Skip initial direction setup
-        takeWhile(() => this.alive),
-      )
-      .subscribe(direction => {
-        this.analyticsService.trackEvent('directionToggle', {
-          event_category: AnalyticsCategories.Customization,
-          event_label: direction,
         });
       });
   }
