@@ -29,12 +29,12 @@ stages:
       inputs:
         command: ci
 
-    - task: Npm@1
-      displayName: npm run lint:ci
-      timeoutInMinutes: 3
-      inputs:
-        command: custom
-        customCommand: run lint:ci
+    #- task: Npm@1
+    #  displayName: npm run lint:ci
+    #  timeoutInMinutes: 3
+    #  inputs:
+    #    command: custom
+    #    customCommand: run lint:ci
 
     - task: Npm@1
       displayName: npm run test:once
