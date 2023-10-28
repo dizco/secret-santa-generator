@@ -1,5 +1,5 @@
-describe('My First Test', () => {
-  it('Visits the initial project page', () => {
+describe('Secret Santa Generator', () => {
+  it('has title', () => {
     cy.visit('/');
     const expectedTitle = 'Secret Santa';
     cy.contains(expectedTitle);

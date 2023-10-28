@@ -78,7 +78,7 @@ stages:
         searchFolder: $(System.DefaultWorkingDirectory)/e2e/test-results
         testRunTitle: npm run e2e
         testResultsFormat: JUnit
-        testResultsFiles: "**/junit*.xml"
+        testResultsFiles: "**/TEST-*.xml"
 
   - job: Prod
     steps:

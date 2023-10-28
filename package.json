@@ -22,7 +22,7 @@
     "lint:styles": "stylelint ./src/**/*.scss",
     "lint:ci": "npm run lint && npm run lint:styles",
     "e2e": "ng e2e",
-    "e2e:ci": "npm run e2e -- --watch=false --headless=true",
+    "e2e:ci": "npm run e2e -- --watch=false --headless=true --reporter junit",
     "postinstall": "ngcc --properties es2015 es5 browser module main --first-only --create-ivy-entry-points --tsconfig \"./src/tsconfig.app.json\"",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run"
@@ -82,6 +82,7 @@
     "@types/jasminewd2": "2.0.3",
     "@types/node": "^14.18.63",
     "codelyzer": "^6.0.2",
+    "cypress": "latest",
     "husky": "0.13.3",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
@@ -91,12 +92,12 @@
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~4.0.2",
     "karma-jasmine-html-reporter": "^1.5.0",
+    "mocha-junit-reporter": "^2.2.1",
     "rimraf": "2.6.1",
     "stylelint": "^13.7.2",
     "ts-node": "3.2.2",
     "tslint": "~6.1.0",
     "tslint-language-service": "^0.9.9",
-    "typescript": "~4.6.4",
-    "cypress": "latest"
+    "typescript": "~4.6.4"
   }
 }
