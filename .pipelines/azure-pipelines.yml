@@ -59,10 +59,10 @@ stages:
         summaryFileLocation: $(Build.SourcesDirectory)/coverage/cobertura-coverage.xml
 
     - task: Npm@1
-      displayName: npm run e2e
+      displayName: npm run e2e:ci
       inputs:
         command: custom
-        customCommand: run e2e
+        customCommand: run e2e:ci
 
     - task: PublishTestResults@2
       displayName: Publish E2E Test Results
