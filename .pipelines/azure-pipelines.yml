@@ -1,3 +1,8 @@
+parameters:
+- name: IsProd
+  type: boolean
+  default: false
+
 trigger:
 - master
 
@@ -6,6 +11,8 @@ pool:
   demands: npm
 
 variables:
+  IsMaster: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
+  IsProd: ${{ parameters.IsProd }}
   ArtifactName: drop
   ArtifactPath: $(Pipeline.Workspace)/$(ArtifactName)
 
@@ -110,7 +117,7 @@ stages:
 
 - stage: Deploy
   displayName: Deploy
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), or(eq(variables.IsMaster, true), eq(variables.IsProd, true)))
   variables:
   - group: kiosoft.ca-secrets
   jobs:
