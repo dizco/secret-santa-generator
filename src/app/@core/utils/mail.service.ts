@@ -37,7 +37,7 @@ export class MailService {
     };
 
     const mailServerUrl = environment.mailServerUrl;
-    return this.http.post<Mail>(`${mailServerUrl}/send`, MailService.buildMailRequestBody(options, captchaResponse), httpOptions)
+    return this.http.post<Mail>(`${mailServerUrl}/api/mail`, MailService.buildMailRequestBody(options, captchaResponse), httpOptions)
       .pipe(
         retry(1),
         catchError(MailService.handleError),
