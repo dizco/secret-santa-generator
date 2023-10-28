@@ -61,7 +61,7 @@ export class MailService {
         header: options.message.header,
         body: options.message.body,
       },
-      captcha: captchaResponse,
+      'g-recaptcha-response': captchaResponse,
     };
   }
 

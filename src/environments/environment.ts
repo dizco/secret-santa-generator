@@ -18,6 +18,11 @@ export const environment = {
     authority: 'https://kiosoft.us.auth0.com',
     clientId: 'HKTkPebbbQs9maBWyFTkPyq3AT8Ki0JM',
   },
+  recaptcha: {
+    siteKey: '6LcrSgkmAAAAAPZv3VO6ZF2-04DUGHfTU9DdoLF_',
+    // siteKey: '6LeCVDIUAAAAAMQBTyx-BZ8DCbD3caY8r145qC46',
+  },
   mailServerUrl: 'http://localhost:8000',
+  // mailServerUrl: 'https://kiosoft.ca',
   appName: 'secret-santa-generator',
 };

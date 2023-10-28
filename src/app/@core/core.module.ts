@@ -32,34 +32,12 @@ export class NbSimpleRoleProvider extends NbRoleProvider {
   }
 }
 
-/*export function configureAuth(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
-      stsServer: environment.oidc.authority,
-      redirectUrl: `${window.location.origin}/auth/callback`,
-      postLogoutRedirectUri: `${window.location.origin}/auth/logout/callback`,
-      clientId: environment.oidc.clientId,
-      scope: 'openid profile email',
-      responseType: 'code',
-      // silentRenew: true,
-      // silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-      logLevel: LogLevel.Error,
-    });
-}*/
-
 export type PreferredTokenPayloadType = Auth0Token;
 
 export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
   ...DATA_SERVICES,
 
-  // OidcConfigService,
-  /*{
-    provide: APP_INITIALIZER,
-    useFactory: configureAuth,
-    deps: [OidcConfigService],
-    multi: true,
-  },*/
   ...NbAuthModule.forRoot({
     strategies: [
       Auth0AuthStrategy.setup({
@@ -106,7 +84,7 @@ export const NB_CORE_PROVIDERS = [
   {
     provide: NbRoleProvider, useClass: NbSimpleRoleProvider,
   },
-  { provide: RECAPTCHA_SETTINGS, useValue: { siteKey: '6LcTbdsZAAAAAC6Xw6cK9KJCTsPo9lCS2N__U9t_' } as RecaptchaSettings },
+  { provide: RECAPTCHA_SETTINGS, useValue: { siteKey: environment.recaptcha.siteKey } as RecaptchaSettings },
   AnalyticsService,
   LayoutService,
   MailService,
