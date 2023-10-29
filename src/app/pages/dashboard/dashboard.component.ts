@@ -168,20 +168,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
         map((token: NbAuthToken) => token.getPayload() as Auth0Token),
         map((token: Auth0Token) => ({ name: token.user.name, email: token.user.email } as Participant)),
       )),
-      switchMap((creator: Participant) => of(this.participants).pipe(
-        mergeMap((p) => p), // Split the array
-        mergeMap((participant: Participant) => this.drawService.sendResults([participant], creator, this.captchaResponse).pipe(
-          mergeMap((r) => r), // Map each response individually
-        )),
-        tap((response) => {
-          const config: Partial<NbToastrConfig> = { duration: 15000 };
-          if (response.success) {
-            this.toastrService.success(`Sent message to ${response.mailTo}`, 'Success', config);
-          } else {
-            this.toastrService.danger(`Error sending message to ${response.mailTo}: ${response.message}`, 'Error', config);
-          }
-        })),
-      ),
+      switchMap((creator: Participant) => this.drawService.sendResults(this.participants, creator, this.captchaResponse)),
+      tap((response) => {
+        const config: Partial<NbToastrConfig> = { duration: 15000 };
+        if (response.success) {
+          this.toastrService.success(`Messages successfully sent`, 'Success', config);
+        } else {
+          this.toastrService.danger(`Error sending messages: ${response.message}`, 'Error', config);
+        }
+      }),
       takeWhile(() => this.alive),
       toArray(),
       tap(() => this.isSending = false),

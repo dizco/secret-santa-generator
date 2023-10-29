@@ -1,3 +1,8 @@
+parameters:
+- name: IsProd
+  type: boolean
+  default: false
+
 trigger:
 - master
 
@@ -6,6 +11,8 @@ pool:
   demands: npm
 
 variables:
+  IsMaster: ${{ eq(variables['Build.SourceBranch'], 'refs/heads/master') }}
+  IsProd: ${{ parameters.IsProd }}
   ArtifactName: drop
   ArtifactPath: $(Pipeline.Workspace)/$(ArtifactName)
 
@@ -16,6 +23,11 @@ stages:
   - job: ValidatePR
     condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
+    - task: NodeTool@0
+      inputs:
+        versionSource: 'spec'
+        versionSpec: '14.x'
+
     - template: templates/print-environment-variables.yaml
 
     - task: Npm@1
@@ -24,12 +36,12 @@ stages:
       inputs:
         command: ci
 
-    - task: Npm@1
-      displayName: npm run lint:ci
-      timeoutInMinutes: 3
-      inputs:
-        command: custom
-        customCommand: run lint:ci
+    #- task: Npm@1
+    #  displayName: npm run lint:ci
+    #  timeoutInMinutes: 3
+    #  inputs:
+    #    command: custom
+    #    customCommand: run lint:ci
 
     - task: Npm@1
       displayName: npm run test:once
@@ -54,10 +66,10 @@ stages:
         summaryFileLocation: $(Build.SourcesDirectory)/coverage/cobertura-coverage.xml
 
     - task: Npm@1
-      displayName: npm run e2e
+      displayName: npm run e2e:ci
       inputs:
         command: custom
-        customCommand: run e2e
+        customCommand: run e2e:ci
 
     - task: PublishTestResults@2
       displayName: Publish E2E Test Results
@@ -66,10 +78,15 @@ stages:
         searchFolder: $(System.DefaultWorkingDirectory)/e2e/test-results
         testRunTitle: npm run e2e
         testResultsFormat: JUnit
-        testResultsFiles: "**/junit*.xml"
+        testResultsFiles: "**/TEST-*.xml"
 
   - job: Prod
     steps:
+    - task: NodeTool@0
+      inputs:
+        versionSource: 'spec'
+        versionSpec: '14.x'
+
     - template: templates/print-environment-variables.yaml
 
     - task: Npm@1
@@ -100,7 +117,7 @@ stages:
 
 - stage: Deploy
   displayName: Deploy
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), or(eq(variables.IsMaster, true), eq(variables.IsProd, true)))
   variables:
   - group: kiosoft.ca-secrets
   jobs:

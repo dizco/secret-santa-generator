@@ -17,7 +17,7 @@ import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha';
 import { Auth0AuthStrategy, Auth0JWTToken, Auth0Token } from './auth/auth0-auth-strategy';
-import { LogLevel, OidcConfigService } from 'angular-auth-oidc-client';
+import { LogLevel } from 'angular-auth-oidc-client';
 import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client';
 import { TokenService } from './auth/token.service';
 import { environment } from '../../environments/environment';
@@ -32,34 +32,12 @@ export class NbSimpleRoleProvider extends NbRoleProvider {
   }
 }
 
-export function configureAuth(oidcConfigService: OidcConfigService) {
-  return () =>
-    oidcConfigService.withConfig({
-      stsServer: environment.oidc.authority,
-      redirectUrl: `${window.location.origin}/auth/callback`,
-      postLogoutRedirectUri: `${window.location.origin}/auth/logout/callback`,
-      clientId: environment.oidc.clientId,
-      scope: 'openid profile email',
-      responseType: 'code',
-      // silentRenew: true,
-      // silentRenewUrl: `${window.location.origin}/silent-renew.html`,
-      logLevel: LogLevel.Error,
-    });
-}
-
 export type PreferredTokenPayloadType = Auth0Token;
 
 export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
   ...DATA_SERVICES,
 
-  OidcConfigService,
-  {
-    provide: APP_INITIALIZER,
-    useFactory: configureAuth,
-    deps: [OidcConfigService],
-    multi: true,
-  },
   ...NbAuthModule.forRoot({
     strategies: [
       Auth0AuthStrategy.setup({
@@ -106,7 +84,7 @@ export const NB_CORE_PROVIDERS = [
   {
     provide: NbRoleProvider, useClass: NbSimpleRoleProvider,
   },
-  { provide: RECAPTCHA_SETTINGS, useValue: { siteKey: '6LcTbdsZAAAAAC6Xw6cK9KJCTsPo9lCS2N__U9t_' } as RecaptchaSettings },
+  { provide: RECAPTCHA_SETTINGS, useValue: { siteKey: environment.recaptcha.siteKey } as RecaptchaSettings },
   AnalyticsService,
   LayoutService,
   MailService,
@@ -116,7 +94,20 @@ export const NB_CORE_PROVIDERS = [
 @NgModule({
   imports: [
     CommonModule,
-    OidcAuthModule.forRoot(),
+    OidcAuthModule.forRoot({
+      config: {
+        authority: environment.oidc.authority,
+        redirectUrl: `${window.location.origin}/auth/callback`,
+        postLogoutRedirectUri: `${window.location.origin}/auth/logout/callback`,
+        clientId: environment.oidc.clientId,
+        scope: 'openid profile email',
+        responseType: 'code',
+        // silentRenew: true,
+        // useRefreshToken: true,
+        // silentRenewUrl: `${window.location.origin}/silent-renew.html`,
+        logLevel: LogLevel.Error,
+      },
+    }),
   ],
   exports: [
     NbAuthModule,

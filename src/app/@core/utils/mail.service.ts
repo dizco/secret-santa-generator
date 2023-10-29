@@ -17,51 +17,48 @@ export interface MailOptions {
 export interface MailResponse {
   success: boolean;
   message?: string;
-  mailTo: string;
-}
-
-interface Mail {
-  to: string;
 }
 
 @Injectable()
 export class MailService {
   constructor(private http: HttpClient) {}
 
-  send(options: MailOptions, captchaResponse: string): Observable<MailResponse> {
+  send(options: MailOptions[], captchaResponse: string): Observable<MailResponse> {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/vnd.kiosoft.mailV1+json',
-        'Accept': 'application/vnd.kiosoft.mailV1+json',
+        'Content-Type':  'application/vnd.kiosoft.emailsV1+json',
+        'Accept': 'application/vnd.kiosoft.emailsV1+json',
       }),
     };
 
     const mailServerUrl = environment.mailServerUrl;
-    return this.http.post<Mail>(`${mailServerUrl}/send`, MailService.buildMailRequestBody(options, captchaResponse), httpOptions)
+    return this.http.post<void>(`${mailServerUrl}/api/emails`, MailService.buildMailRequestBody(options, captchaResponse), httpOptions)
       .pipe(
         retry(1),
         catchError(MailService.handleError),
-        map(mail => {
+        map(() => {
           return {
             success: true,
-            mailTo: mail.to,
           } as MailResponse;
         }),
       );
   }
 
-  private static buildMailRequestBody(options: MailOptions, captchaResponse: string): any {
+  private static buildMailRequestBody(options: MailOptions[], captchaResponse: string): any {
     return {
-      to: options.to,
-      from: {
-        name: options.from,
-      },
-      subject: options.subject,
-      message: {
-        header: options.message.header,
-        body: options.message.body,
-      },
-      captcha: captchaResponse,
+      emails: options.map(o => ({
+        to: o.to,
+        from: {
+          name: o.from,
+        },
+        subject: o.subject,
+        message: {
+          header: o.message.header,
+          body: o.message.body,
+        },
+
+      })),
+      'g-recaptcha-response': captchaResponse,
     };
   }
 
