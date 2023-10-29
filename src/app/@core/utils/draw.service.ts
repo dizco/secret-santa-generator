@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { MailResponse, MailService } from './mail.service';
 import { catchError } from 'rxjs/operators';
 
@@ -7,6 +7,7 @@ export interface Participant {
   name: string;
   email: string;
   picked?: Participant;
+  restrictions?: Participant[];
 }
 
 @Injectable()
