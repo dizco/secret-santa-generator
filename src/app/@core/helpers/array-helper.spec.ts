@@ -1,4 +1,4 @@
-import { ArrayHelper } from './array-helper';
+import { ArrayHelper, Shuffle } from './array-helper';
 
 describe('ArrayHelper', () => {
   describe('unique', () => {
@@ -55,6 +55,37 @@ describe('ArrayHelper', () => {
       expect(result).toContain(3);
       expect(result).toContain(4);
       expect(result).toContain(5);
+    });
+
+    it('should respect restrictions', () => {
+      // Arrange
+      const array: Shuffle<{a: number}>[] = [{a: 0}, {a: 1}, {a: 2}, {a: 3}, {a: 4}];
+      array[0].restrictions = [array[1], array[2], array[3]]; // will have to pick a4
+      array[1].restrictions = [array[0], array[2]]; // will have to pick a3
+      array[2].restrictions = [array[0]]; // will have to pick a1
+      array[3].restrictions = [array[0]]; // will have to pick a2
+      // a4 will have to pick a0
+
+      // Act
+      const result = ArrayHelper.completeShuffle(array);
+      result.forEach(a => {
+        delete a.restrictions;
+      });
+
+      // Assert
+      expect(result).toEqual([{a: 4}, {a: 3}, {a: 1}, {a: 2}, {a: 0}]);
+    });
+
+    it('should throw because it is unsolvable', () => {
+      // Arrange
+      const array: Shuffle<{a: number}>[] = [{a: 0}, {a: 1}, {a: 2}, {a: 3}, {a: 4}];
+      array[0].restrictions = [array[1], array[2], array[3], array[4]]; // nobody to pick
+
+      // Act
+      const action = () => ArrayHelper.completeShuffle(array);
+
+      // Assert
+      expect(action).toThrow();
     });
 
     it('should throw because the array only contains 1 element', () => {
