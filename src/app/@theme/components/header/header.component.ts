@@ -21,7 +21,7 @@ export declare abstract class UserMenuItem extends NbMenuItem {
 export class HeaderComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<void> = new Subject<void>();
-  userPictureOnly: boolean = false;
+  userPictureOnly = false;
   user: any;
   public readonly materialTheme$: Observable<boolean>;
 

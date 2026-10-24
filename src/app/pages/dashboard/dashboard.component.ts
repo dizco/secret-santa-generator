@@ -37,7 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     map(v => v),
   );
 
-  isSending: boolean = false;
+  isSending = false;
 
   /**
    * Set when the restrictions make the draw impossible
@@ -336,7 +336,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formatNames(participants: Participant[], conjunction: string = 'and'): string {
+  private formatNames(participants: Participant[], conjunction = 'and'): string {
     const names = participants.map((p) => this.getDisplayName(p));
     if (names.length <= 1) {
       return names.join('');

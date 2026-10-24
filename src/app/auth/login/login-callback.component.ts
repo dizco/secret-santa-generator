@@ -17,9 +17,9 @@ import { AuthWindowService } from '../../@core/auth/auth-window.service';
 // Responsibility of creating the window is set on the component who triggers the login flow
 export class LoginCallbackComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  private strategy: string = '';
+  private strategy = '';
 
-  error: string = '';
+  error = '';
 
   constructor(private authService: NbAuthService,
               private authWindowService: AuthWindowService,
