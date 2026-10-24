@@ -66,7 +66,8 @@ export const NB_CORE_PROVIDERS = [
   AuthWindowService,
   NonDisruptiveAuthService,
   { provide: HTTP_INTERCEPTORS, useClass: NbAuthJWTInterceptor, multi: true },
-  { provide: NB_AUTH_TOKEN_INTERCEPTOR_FILTER, useValue: (req) => false }, // Let everything through
+  // Only attach tokens to mail server requests; intercepting Auth0 calls deadlocks token refresh
+  { provide: NB_AUTH_TOKEN_INTERCEPTOR_FILTER, useValue: (req) => !req.url.startsWith(environment.mailServerUrl) },
 
   NbSecurityModule.forRoot({
     accessControl: {
