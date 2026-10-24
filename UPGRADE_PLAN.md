@@ -61,10 +61,10 @@ Build, test, commit. Per-step notes:
 
 - **CDK pinned to `@angular/cdk@~21.0.6`** on purpose. Nebular 17.0.0 imports `_VIEW_REPEATER_STRATEGY`, which CDK 21.1+ removed. Do not bump CDK until Nebular ships a fix.
 - **Lockfile / npm**: the lockfile was generated with `npx npm@latest install` (npm 12). Plain `npm install` on npm 11.5.2 crashes (`Cannot read properties of null (reading 'edgesOut')`) when `@angular/build` is a direct dependency. Use `npx npm@latest install` when adding or removing packages. `npm ci` with npm 11 works against the lockfile.
-- **`angular-auth-oidc-client` 22.0.2** (instead of 21.x) was used; the auth strategy was rewritten for the new API.
+- **`angular-auth-oidc-client` 22.0.2** (instead of 21.x) was used; the existing code already used the modern API, so the only change was `authorize(null, …)` → `authorize(undefined, …)`.
 - **`_angular-material.scss` deleted**: its `~` imports are unsupported by the esbuild builder and the material theme was not otherwise needed.
 - **`outputPath` kept at `dist/`** (not `dist/<project>/browser`) so the Azure deploy step (`CopyFiles` from `dist`) keeps working.
-- **`ionicons` kept** (it is still used by the styles), contrary to the Phase 0 cleanup list.
+- **`ionicons` kept** (still used for icons in the footer and search input), contrary to the Phase 0 cleanup list.
 - **Lint**: `eslint.config.js` uses the angular-eslint 21 flat config (ESLint 9, typescript-eslint). Rules that would need large or risky rewrites of legacy ngx-admin code (`prefer-inject`, `prefer-standalone`, selector prefixes, `no-explicit-any`, `no-negated-async`, a11y template rules, etc.) are off or `warn`. `npm run lint` exits 0 with warnings only; `npm run lint:styles` (stylelint 13) works. `lint:ci` is now enabled in the Azure pipeline.
 - **Test runner: migrated to Vitest** (`@angular/build:unit-test`, jsdom). The two specs are pure TypeScript, so the migration was trivial: only `jasmine.any` and Jasmine failure-message arguments needed changes. Karma, Jasmine, `karma.conf.js` and the Chrome requirement are gone. JUnit goes to `test-results/junit.xml`, Cobertura to `coverage/ngx-admin-demo/cobertura-coverage.xml`; the pipeline paths were updated. `typeRoots` in `src/tsconfig.spec.json` includes `../node_modules` so `vitest/globals` resolves. `declare var` in `typings.d.ts` must stay `var` (conflicts with `@types/node` otherwise).
 - `rimraf` kept (used by `test:coverage`), bumped to 6.
@@ -74,4 +74,4 @@ Build, test, commit. Per-step notes:
 - [ ] OIDC login / logout / callback against the real Auth0 tenant. Watch for strict issuer validation errors; if it fails, set `strictIssuerValidationOnWellKnownRetrievalOff: true` in the OIDC config.
 - [ ] Visual check of the theme switcher in all themes (default, dark, cosmic, corporate, material).
 - [ ] reCAPTCHA on the dashboard (`ng-recaptcha-2`).
-- [ ] Google Analytics events (the local `GtagService`).
+- [ ] Google Analytics events (`AnalyticsService` now calls `window.gtag` directly).
