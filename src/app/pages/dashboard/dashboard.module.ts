@@ -36,9 +36,6 @@ import { RecaptchaModule } from 'ng-recaptcha';
     NbSpinnerModule,
     RecaptchaModule,
   ],
-  entryComponents: [
-    ConfirmPromptComponent,
-  ],
   declarations: [
     DashboardComponent,
     ConfirmPromptComponent,
