@@ -17,9 +17,10 @@ enum ResultsState {
 }
 
 @Component({
-  selector: 'ngx-dashboard',
-  styleUrls: ['dashboard.component.scss'],
-  templateUrl: './dashboard.component.html',
+    selector: 'ngx-dashboard',
+    styleUrls: ['dashboard.component.scss'],
+    templateUrl: './dashboard.component.html',
+    standalone: false
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private alive = true;

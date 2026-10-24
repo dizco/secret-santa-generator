@@ -15,13 +15,14 @@ interface ConfirmPromptDialogRef extends NbDialogRef<ConfirmPromptComponent> {
 }
 
 @Component({
-  selector: 'ngx-confirm-prompt',
-  templateUrl: 'confirm-prompt.component.html',
-  styles: [`
+    selector: 'ngx-confirm-prompt',
+    templateUrl: 'confirm-prompt.component.html',
+    styles: [`
     nb-card {
       max-width: 700px;
     }
   `],
+    standalone: false
 })
 export class ConfirmPromptComponent implements OnInit, OnDestroy {
   private alive = true;

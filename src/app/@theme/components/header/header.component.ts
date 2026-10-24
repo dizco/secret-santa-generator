@@ -13,9 +13,10 @@ export declare abstract class UserMenuItem extends NbMenuItem {
 }
 
 @Component({
-  selector: 'ngx-header',
-  styleUrls: ['./header.component.scss'],
-  templateUrl: './header.component.html',
+    selector: 'ngx-header',
+    styleUrls: ['./header.component.scss'],
+    templateUrl: './header.component.html',
+    standalone: false
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
