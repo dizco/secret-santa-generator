@@ -6,7 +6,7 @@
 
 ## Install
 
-1. [Install node](https://nodejs.org/en/), if not already installed. The application has been tested with node 10.16.3 and npm 6.4.1.
+1. [Install node](https://nodejs.org/en/), if not already installed. The application is built with Angular 21 and requires node 22 or later (tested with node 22.16). If `npm install` crashes on an older npm 11 (`Cannot read properties of null (reading 'edgesOut')`), use `npm ci` or a newer npm (`npx npm@latest install`).
 
 2. Clone this repository 
     ```shell
@@ -50,19 +50,19 @@ npm run build:prod
 
 ## Linting
 
-To run tslint :
+To run ESLint (angular-eslint) :
 ```shell
 npm run lint
 ```
 
-To run more extensive lint including tslint as well as stylelint (this command is hooked on prepush as well) :
+To run more extensive lint including ESLint as well as stylelint (this command is hooked on prepush as well) :
 ```shell
 npm run lint:ci
 ```
 
 ## Testing :heart_eyes:
 
-Run the unit tests in a console with the following command :
+Unit tests use Vitest (jsdom, no browser required). Run the unit tests in a console with the following command :
 ```shell
 npm run test:once
 ```
