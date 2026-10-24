@@ -51,6 +51,11 @@
       }
     }
 
+    &.has-issue {
+      border-color: nb-theme(color-danger-default);
+      background-color: nb-theme(color-danger-transparent-default);
+    }
+
     input {
       max-width: 100%;
       width: 100%;

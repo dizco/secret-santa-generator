@@ -11,16 +11,23 @@
             </ng-container>
             <ng-container>
               <button *ngIf="!(isEditing | async)" nbButton ghost status="primary" (click)="enterEditMode()" nbTooltip="Edit draw"><nb-icon icon="edit"></nb-icon></button>
-              <button *ngIf="isEditing | async" nbButton ghost status="primary" (click)="save()" nbTooltip="Save and generate"><nb-icon icon="save"></nb-icon></button>
+              <button *ngIf="isEditing | async" nbButton ghost status="primary" [disabled]="!!drawIssue" (click)="save()" [nbTooltip]="drawIssue ? 'Fix the restrictions to generate the draw' : 'Save and generate'"><nb-icon icon="save"></nb-icon></button>
             </ng-container>
             <button nbButton ghost status="primary" [disabled]="isEditing | async" (click)="regenerate()" nbTooltip="Regenerate draw"><nb-icon icon="repeat"></nb-icon></button>
           </div>
         </div>
+        <nb-alert outline="danger" class="mt-3" *ngIf="drawIssue">
+          <div class="d-flex align-items-center mb-1">
+            <nb-icon icon="alert-circle-outline" status="danger" class="mr-2"></nb-icon>
+            <strong>This draw is impossible with the current restrictions</strong>
+          </div>
+          <span>{{ getDrawIssueMessage() }} Remove some restrictions on the highlighted participants to make it possible.</span>
+        </nb-alert>
         <nb-list>
           <nb-list-item *ngFor="let participant of participants">
             <div class="row">
               <div class="col-md-5 d-flex align-items-center">
-                <div class="draw-participant-card status-primary size-medium shape-rectangle">
+                <div class="draw-participant-card status-primary size-medium shape-rectangle" [class.has-issue]="isPartOfDrawIssue(participant)">
                   <div class="row d-flex justify-content-center">
                     <div class="col-12 col-sm-10">
                       <nb-user *ngIf="!(isEditing | async)" [name]="participant.name" [title]="participant.email" size="medium"></nb-user>
@@ -30,14 +37,14 @@
                       <ng-container *ngIf="isEditing | async">
                         <div class="row">
                           <div class="col-12 col-lg-10 col-xl-6 mb-3 mb-xl-0">
-                            <input type="text" nbInput placeholder="Participant name" status="primary" [(ngModel)]="participant.name" autofocus>
+                            <input type="text" nbInput placeholder="Participant name" status="primary" [(ngModel)]="participant.name" (ngModelChange)="refreshDrawIssue()" autofocus>
                           </div>
                           <div class="col-12 col-lg-10 col-xl-6">
-                            <input type="text" nbInput placeholder="Participant email" status="primary" [(ngModel)]="participant.email" autofocus>
+                            <input type="text" nbInput placeholder="Participant email" status="primary" [(ngModel)]="participant.email" (ngModelChange)="refreshDrawIssue()" autofocus>
                           </div>
                           <div class="col-12 col-lg-10 col-xl-12 mt-3">
                             <nb-select multiple fullWidth size="small" status="primary" placeholder="Can pick anyone"
-                                       [(selected)]="participant.restrictions" nbTooltip="People this participant can't pick">
+                                       [selected]="participant.restrictions" (selectedChange)="updateRestrictions(participant, $event)" nbTooltip="People this participant can't pick">
                               <nb-select-label *ngIf="participant.restrictions?.length">Can't pick: {{ getRestrictionNames(participant) }}</nb-select-label>
                               <nb-option *ngFor="let other of getRestrictionCandidates(participant)" [value]="other">{{ getDisplayName(other) }}</nb-option>
                             </nb-select>

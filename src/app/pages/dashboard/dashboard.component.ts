@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ArrayHelper } from '../../@core/helpers/array-helper';
+import { DrawSolver, UnsolvableDrawError, UnsolvableGroup } from '../../@core/helpers/draw-solver';
 import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take, takeWhile, tap, toArray } from 'rxjs/operators';
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
@@ -39,6 +39,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   isSending: boolean = false;
 
+  /**
+   * Set when the restrictions make the draw impossible
+   */
+  drawIssue: UnsolvableGroup<Participant> | null = null;
+
   resultsState = ResultsState;
 
   participants: Participant[] = [
@@ -73,6 +78,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
               private toastrService: NbToastrService) {}
 
   async ngOnInit(): Promise<void> {
+    this.refreshDrawIssue();
+
     this.isEditing.pipe(
       filter((value) => !value), // Only when isEditing becomes false
       takeWhile(() => this.alive),
@@ -127,6 +134,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   removeParticipant(participant: Participant): void {
     this.participants = this.participants.filter((p) => p !== participant);
     this.removeDanglingRestrictions();
+    this.refreshDrawIssue();
 
     this.analyticsService.trackEvent('removeParticipant', {
       event_category: AnalyticsCategories.SecretSantaGenerator,
@@ -199,6 +207,40 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return (participant.restrictions || []).map((p) => this.getDisplayName(p)).join(', ');
   }
 
+  updateRestrictions(participant: Participant, restrictions: Participant[]): void {
+    participant.restrictions = restrictions;
+    this.refreshDrawIssue();
+  }
+
+  refreshDrawIssue(): void {
+    const participants = this.participants.filter((p) => DashboardComponent.isFilledIn(p));
+    this.drawIssue = participants.length > 1 ? DrawSolver.findUnsolvableGroup(participants) : null;
+  }
+
+  isPartOfDrawIssue(participant: Participant): boolean {
+    return !!this.drawIssue && this.drawIssue.members.includes(participant);
+  }
+
+  getDrawIssueMessage(): string {
+    const { side, members, candidates } = this.drawIssue;
+    const membersNames = this.formatNames(members);
+    const verb = members.length === 1 ? 'is' : 'are';
+
+    if (side === 'pickers') {
+      if (candidates.length === 0) {
+        return `${membersNames} can't pick anyone.`;
+      }
+      return `${membersNames} can only pick ${this.formatNames(candidates, 'or')}, `
+        + `but there ${verb} ${members.length} of them and everyone must pick a different person.`;
+    }
+
+    if (candidates.length === 0) {
+      return `Nobody can pick ${membersNames}.`;
+    }
+    return `${membersNames} can only be picked by ${this.formatNames(candidates, 'or')}, `
+      + `but there ${verb} ${members.length} of them and everyone picks a single person.`;
+  }
+
   hasEnoughParticipantsForDraw(): boolean {
     return this.participants.length > 1;
   }
@@ -218,6 +260,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       take(1),
       map((isEditing: boolean) => {
         return !isEditing
+          && !this.drawIssue
           && this.hasEnoughParticipantsForDraw()
           && this.allParticipantsHaveAnEmail();
       }),
@@ -253,14 +296,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     let shuffled: Participant[];
     try {
-      shuffled = ArrayHelper.completeShuffle(this.participants);
+      shuffled = DrawSolver.solve(this.participants);
     } catch (error) {
+      if (!(error instanceof UnsolvableDrawError)) {
+        throw error;
+      }
+
       this.analyticsService.trackEvent('invalidDraw', {
         event_category: AnalyticsCategories.SecretSantaGenerator,
         event_label: 'Unsolvable restrictions',
       });
-      this.toastrService.danger('No valid draw could be found with these restrictions. Try removing some of them.',
-        'Draw failed', { duration: 15000 });
+      this.drawIssue = error.group;
       this.isEditingSubject.next(true);
 
       return;
@@ -278,9 +324,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private filterInvalidParticipants(): void {
-    this.participants = this.participants.filter((participant) => {
-      return participant.name !== '' || participant.email !== '';
-    });
+    this.participants = this.participants.filter((participant) => DashboardComponent.isFilledIn(participant));
     this.removeDanglingRestrictions();
   }
 
@@ -290,6 +334,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
         participant.restrictions = participant.restrictions.filter((p) => this.participants.includes(p));
       }
     });
+  }
+
+  private formatNames(participants: Participant[], conjunction: string = 'and'): string {
+    const names = participants.map((p) => this.getDisplayName(p));
+    if (names.length <= 1) {
+      return names.join('');
+    }
+    return `${names.slice(0, -1).join(', ')} ${conjunction} ${names[names.length - 1]}`;
+  }
+
+  private static isFilledIn(participant: Participant): boolean {
+    return participant.name !== '' || participant.email !== '';
   }
 
   private static buildEmptyParticipant(): Participant {
