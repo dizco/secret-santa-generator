@@ -26,7 +26,7 @@ stages:
     - task: NodeTool@0
       inputs:
         versionSource: 'spec'
-        versionSpec: '14.x'
+        versionSpec: '22.x'
 
     - template: templates/print-environment-variables.yaml
 
@@ -85,7 +85,7 @@ stages:
     - task: NodeTool@0
       inputs:
         versionSource: 'spec'
-        versionSpec: '14.x'
+        versionSpec: '22.x'
 
     - template: templates/print-environment-variables.yaml
 
