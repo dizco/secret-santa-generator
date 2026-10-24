@@ -20,8 +20,6 @@ import {
   NbToastrModule,
   NbWindowModule,
 } from '@nebular/theme';
-import { GtagModule } from 'angular-gtag';
-import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [AppComponent],
@@ -43,10 +41,6 @@ import { environment } from '../environments/environment';
       messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
     }),
     CoreModule.forRoot(),
-    GtagModule.forRoot({
-      trackingId: environment.analytics.trackingId,
-      trackPageviews: false,
-    }),
   ],
   bootstrap: [AppComponent],
 })
