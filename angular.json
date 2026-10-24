@@ -94,30 +94,22 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "karmaConfig": "./karma.conf.js",
-            "polyfills": [
-              "src/polyfills.ts",
-              "zone.js/testing"
-            ],
+            "runner": "vitest",
+            "buildTarget": "ngx-admin-demo:build",
             "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [
-              "node_modules/pace-js/pace.min.js"
+            "coverageReporters": [
+              "html",
+              "lcovonly",
+              "text-summary",
+              "cobertura"
             ],
-            "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.css",
-              "node_modules/typeface-exo/index.css",
-              "node_modules/roboto-fontface/css/roboto/roboto-fontface.css",
-              "node_modules/ionicons/scss/ionicons.scss",
-              "node_modules/pace-js/templates/pace-theme-flash.tmpl.css",
-              "src/app/@theme/styles/styles.scss"
+            "reporters": [
+              "default",
+              "junit"
             ],
-            "assets": [
-              "src/assets",
-              "src/favicon.ico",
-              "src/favicon.png"
-            ]
+            "outputFile": "test-results/junit.xml"
           }
         },
         "lint": {

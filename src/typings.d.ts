@@ -5,11 +5,11 @@
  */
 
 /* SystemJS module definition */
-declare let module: NodeModule;
+declare var module: NodeModule;
 interface NodeModule {
   id: string;
 }
 
-declare let tinymce: any;
+declare var tinymce: any;
 
-declare let echarts: any;
+declare var echarts: any;
