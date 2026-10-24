@@ -126,6 +126,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   removeParticipant(participant: Participant): void {
     this.participants = this.participants.filter((p) => p !== participant);
+    this.removeDanglingRestrictions();
 
     this.analyticsService.trackEvent('removeParticipant', {
       event_category: AnalyticsCategories.SecretSantaGenerator,
@@ -186,6 +187,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ).subscribe();
   }
 
+  getRestrictionCandidates(participant: Participant): Participant[] {
+    return this.participants.filter((p) => p !== participant);
+  }
+
+  getDisplayName(participant: Participant): string {
+    return participant.name || participant.email || 'Unnamed participant';
+  }
+
+  getRestrictionNames(participant: Participant): string {
+    return (participant.restrictions || []).map((p) => this.getDisplayName(p)).join(', ');
+  }
+
   hasEnoughParticipantsForDraw(): boolean {
     return this.participants.length > 1;
   }
@@ -238,7 +251,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const shuffled = ArrayHelper.completeShuffle(this.participants);
+    let shuffled: Participant[];
+    try {
+      shuffled = ArrayHelper.completeShuffle(this.participants);
+    } catch (error) {
+      this.analyticsService.trackEvent('invalidDraw', {
+        event_category: AnalyticsCategories.SecretSantaGenerator,
+        event_label: 'Unsolvable restrictions',
+      });
+      this.toastrService.danger('No valid draw could be found with these restrictions. Try removing some of them.',
+        'Draw failed', { duration: 15000 });
+      this.isEditingSubject.next(true);
+
+      return;
+    }
+
     for (let i = 0; i < this.participants.length; i++) {
       this.participants[i].picked = shuffled[i];
     }
@@ -253,6 +280,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private filterInvalidParticipants(): void {
     this.participants = this.participants.filter((participant) => {
       return participant.name !== '' || participant.email !== '';
+    });
+    this.removeDanglingRestrictions();
+  }
+
+  private removeDanglingRestrictions(): void {
+    this.participants.forEach((participant) => {
+      if (participant.restrictions) {
+        participant.restrictions = participant.restrictions.filter((p) => this.participants.includes(p));
+      }
     });
   }
 

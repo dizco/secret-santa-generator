@@ -24,6 +24,9 @@
                   <div class="row d-flex justify-content-center">
                     <div class="col-12 col-sm-10">
                       <nb-user *ngIf="!(isEditing | async)" [name]="participant.name" [title]="participant.email" size="medium"></nb-user>
+                      <div *ngIf="!(isEditing | async) && participant.restrictions?.length" class="restrictions-summary mt-2">
+                        <nb-icon icon="slash-outline"></nb-icon> Can't pick: {{ getRestrictionNames(participant) }}
+                      </div>
                       <ng-container *ngIf="isEditing | async">
                         <div class="row">
                           <div class="col-12 col-lg-10 col-xl-6 mb-3 mb-xl-0">
@@ -31,6 +34,13 @@
                           </div>
                           <div class="col-12 col-lg-10 col-xl-6">
                             <input type="text" nbInput placeholder="Participant email" status="primary" [(ngModel)]="participant.email" autofocus>
+                          </div>
+                          <div class="col-12 col-lg-10 col-xl-12 mt-3">
+                            <nb-select multiple fullWidth size="small" status="primary" placeholder="Can pick anyone"
+                                       [(selected)]="participant.restrictions" nbTooltip="People this participant can't pick">
+                              <nb-select-label *ngIf="participant.restrictions?.length">Can't pick: {{ getRestrictionNames(participant) }}</nb-select-label>
+                              <nb-option *ngFor="let other of getRestrictionCandidates(participant)" [value]="other">{{ getDisplayName(other) }}</nb-option>
+                            </nb-select>
                           </div>
                         </div>
                       </ng-container>

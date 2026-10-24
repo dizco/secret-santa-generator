@@ -11,6 +11,14 @@
     width: 100%;
   }
 
+  .restrictions-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: nb-theme(text-caption-font-size);
+    color: nb-theme(text-hint-color);
+  }
+
   .draw-participant-card {
     width: 100%;
     line-height: 1rem;
