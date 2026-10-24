@@ -5,9 +5,8 @@ import { filter, map, mergeMap, switchMap, take, takeWhile, tap, toArray } from 
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 import { NbAuthService, NbAuthToken } from '@nebular/auth';
-import { NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
+import { NbDialogConfig, NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ConfirmPromptComponent, ConfirmPromptResult } from './confirm-prompt.component';
-import { NbDialogConfig } from '@nebular/theme/components/dialog/dialog-config';
 import { Auth0Token } from '../../@core/auth/auth0-auth-strategy';
 
 enum ResultsState {
