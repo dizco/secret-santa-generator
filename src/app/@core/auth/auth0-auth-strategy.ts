@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { Observable, of as observableOf, throwError } from 'rxjs';
-import { map, switchMap, catchError, filter, tap } from 'rxjs/operators';
+import { map, switchMap, catchError, filter, tap, take } from 'rxjs/operators';
 import {
   NbOAuth2AuthStrategy,
   NbOAuth2ResponseType,
@@ -53,12 +53,14 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
 
   protected redirectResultHandlers: { [key: string]: Function } = {
     [NbOAuth2ResponseType.CODE]: () => {
+      const module = 'token';
       return this.oidcService.checkAuth()
         .pipe(
           switchMap((response) => {
             if (response.isAuthenticated) {
               return this.oidcService.userData$
                 .pipe(
+                  take(1),
                   map((user: UserDataResult) => ({
                     user: user.userData,
                     idToken: response.idToken,
@@ -129,7 +131,7 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
     // 3rd, on callback, logout from NbAuthService
 
     return this.isLogoutRedirect().pipe(
-      switchMap((isRedirect) => this.performLogout()),
+      switchMap((isRedirect) => isRedirect ? observableOf(undefined) : this.performLogout()),
       map(() => new NbAuthResult(true)),
     );
   }
@@ -150,7 +152,7 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
         switchMap(() => this.oidcService.getConfiguration()),
 
         // Leave this check for future proofing if every auth0 exposes end_session
-        filter(configuration => !configuration.authWellknownEndpoints.endSessionEndpoint),
+        filter(configuration => !configuration.authWellknownEndpoints?.endSessionEndpoint),
         // No end session was set, craft our own logout url
         tap((configuration: OpenIdConfiguration) => this.window.location.href = Auth0AuthStrategy.buildLogoutUrl(configuration)),
         map(() => undefined),
