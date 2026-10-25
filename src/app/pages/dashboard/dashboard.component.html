@@ -37,10 +37,10 @@
                       <ng-container *ngIf="isEditing | async">
                         <div class="row">
                           <div class="col-12 col-lg-10 col-xl-6 mb-3 mb-xl-0">
-                            <input type="text" nbInput placeholder="Participant name" status="primary" [(ngModel)]="participant.name" (ngModelChange)="participantsChanged()" autofocus>
+                            <input type="text" nbInput placeholder="Participant name" maxlength="100" status="primary" [(ngModel)]="participant.name" (ngModelChange)="participantsChanged()" autofocus>
                           </div>
                           <div class="col-12 col-lg-10 col-xl-6">
-                            <input type="text" nbInput placeholder="Participant email" status="primary" [(ngModel)]="participant.email" (ngModelChange)="participantsChanged()" autofocus>
+                            <input type="text" nbInput placeholder="Participant email" maxlength="300" status="primary" [(ngModel)]="participant.email" (ngModelChange)="participantsChanged()" autofocus>
                           </div>
                           <div class="col-12 col-lg-10 col-xl-12 mt-3">
                             <nb-select multiple fullWidth size="small" status="primary" placeholder="Can pick anyone"

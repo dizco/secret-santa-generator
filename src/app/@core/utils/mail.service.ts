@@ -4,14 +4,23 @@ import { catchError, map, retry } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-export interface MailOptions {
-  from: string;
+export interface SecretSantaResultParameters {
+  pickedName: string;
+  pickedEmail: string;
+  creatorName: string;
+  creatorEmail: string;
+}
+
+// Server-owned templates and the parameters each one declares
+export interface MailTemplates {
+  'secret-santa-result': SecretSantaResultParameters;
+}
+
+export type MailTemplate = keyof MailTemplates;
+
+export interface MailOptions<T extends MailTemplate> {
   to: string;
-  subject: string;
-  message: {
-    header: string;
-    body: string;
-  };
+  parameters: MailTemplates[T];
 }
 
 export interface MailResponse {
@@ -23,16 +32,16 @@ export interface MailResponse {
 export class MailService {
   constructor(private http: HttpClient) {}
 
-  send(options: MailOptions[], captchaResponse: string): Observable<MailResponse> {
+  send<T extends MailTemplate>(template: T, options: MailOptions<T>[], captchaResponse: string): Observable<MailResponse> {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/vnd.kiosoft.emailsV1+json',
-        'Accept': 'application/vnd.kiosoft.emailsV1+json',
+        'Content-Type':  'application/vnd.kiosoft.emailsV2+json',
+        'Accept': 'application/vnd.kiosoft.emailsV2+json',
       }),
     };
 
     const mailServerUrl = environment.mailServerUrl;
-    return this.http.post<void>(`${mailServerUrl}/api/emails`, MailService.buildMailRequestBody(options, captchaResponse), httpOptions)
+    return this.http.post<void>(`${mailServerUrl}/api/emails`, MailService.buildMailRequestBody(template, options, captchaResponse), httpOptions)
       .pipe(
         retry(1),
         catchError(MailService.handleError),
@@ -44,19 +53,12 @@ export class MailService {
       );
   }
 
-  private static buildMailRequestBody(options: MailOptions[], captchaResponse: string): any {
+  private static buildMailRequestBody<T extends MailTemplate>(template: T, options: MailOptions<T>[], captchaResponse: string): any {
     return {
+      template,
       emails: options.map(o => ({
         to: o.to,
-        from: {
-          name: o.from,
-        },
-        subject: o.subject,
-        message: {
-          header: o.message.header,
-          body: o.message.body,
-        },
-
+        parameters: o.parameters,
       })),
       'g-recaptcha-response': captchaResponse,
     };
