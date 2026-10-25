@@ -1,6 +1,6 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { getDeepFromObject, NB_AUTH_OPTIONS, NbAuthResult, NbAuthService } from '@nebular/auth';
-import { Subject } from 'rxjs';
+import { EMPTY, Subject } from 'rxjs';
 import { catchError, filter, map, takeUntil } from 'rxjs/operators';
 import { AuthWindowService } from '../../@core/auth/auth-window.service';
 
@@ -30,11 +30,19 @@ export class LoginCallbackComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.authenticate(this.strategy)
       .pipe(
-        filter((authResult: NbAuthResult) => authResult.isSuccess()),
+        filter((authResult: NbAuthResult) => {
+          if (!authResult.isSuccess()) {
+            this.error = authResult.getErrors().join(' ') || 'Authentication failed.';
+          }
+          return authResult.isSuccess();
+        }),
         map((authResult: NbAuthResult) => {
           return this.authWindowService.sendResult(authResult);
         }),
-        catchError((e) => this.error = e),
+        catchError((e) => {
+          this.error = e?.message ?? e;
+          return EMPTY;
+        }),
         takeUntil(this.destroy$),
       )
       .subscribe(() => {
