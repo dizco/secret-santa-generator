@@ -10,7 +10,7 @@ import {
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 import { throwIfAlreadyLoaded } from './module-import-guard';
-import { AnalyticsService, DrawService, LayoutService, MailService } from './utils';
+import { AnalyticsService, DrawService, LayoutService, MailService, ParticipantStorageService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
 import { AuthWindowService } from './auth/auth-window.service';
 import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
@@ -90,6 +90,7 @@ export const NB_CORE_PROVIDERS = [
   LayoutService,
   MailService,
   DrawService,
+  ParticipantStorageService,
 ];
 
 @NgModule({

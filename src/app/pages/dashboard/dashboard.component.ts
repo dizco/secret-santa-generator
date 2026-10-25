@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DrawSolver, UnsolvableDrawError, UnsolvableGroup } from '../../@core/helpers/draw-solver';
 import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take, takeWhile, tap, toArray } from 'rxjs/operators';
-import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
+import { AnalyticsService, DrawService, Participant, ParticipantStorageService } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 import { NbAuthService, NbAuthToken } from '@nebular/auth';
 import { NbDialogConfig, NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
@@ -75,9 +75,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(private analyticsService: AnalyticsService, private drawService: DrawService,
               private dialogService: NbDialogService, private authService: NbAuthService,
-              private toastrService: NbToastrService) {}
+              private toastrService: NbToastrService, private participantStorage: ParticipantStorageService) {}
 
   async ngOnInit(): Promise<void> {
+    this.participants = this.participantStorage.load() ?? this.participants;
     this.refreshDrawIssue();
 
     this.isEditing.pipe(
@@ -134,7 +135,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   removeParticipant(participant: Participant): void {
     this.participants = this.participants.filter((p) => p !== participant);
     this.removeDanglingRestrictions();
-    this.refreshDrawIssue();
+    this.participantsChanged();
 
     this.analyticsService.trackEvent('removeParticipant', {
       event_category: AnalyticsCategories.SecretSantaGenerator,
@@ -143,6 +144,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   addParticipant(): void {
     this.participants.push(DashboardComponent.buildEmptyParticipant());
+    this.participantsChanged();
 
     this.analyticsService.trackEvent('addParticipant', {
       event_category: AnalyticsCategories.SecretSantaGenerator,
@@ -209,7 +211,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   updateRestrictions(participant: Participant, restrictions: Participant[]): void {
     participant.restrictions = restrictions;
+    this.participantsChanged();
+  }
+
+  participantsChanged(): void {
     this.refreshDrawIssue();
+    this.participantStorage.save(this.participants);
   }
 
   refreshDrawIssue(): void {
@@ -326,6 +333,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private filterInvalidParticipants(): void {
     this.participants = this.participants.filter((participant) => DashboardComponent.isFilledIn(participant));
     this.removeDanglingRestrictions();
+    this.participantStorage.save(this.participants);
   }
 
   private removeDanglingRestrictions(): void {
