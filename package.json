@@ -57,7 +57,7 @@
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.2.0",
     "@angular/language-service": "^21.2.0",
-    "@compodoc/compodoc": "^1.1.11",
+    "@compodoc/compodoc": "^2.0.0",
     "@cypress/schematic": "^6.0.0",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^4.0.8",
@@ -65,10 +65,14 @@
     "cypress": "^16.2.0",
     "eslint": "^9.39.0",
     "jsdom": "^27.0.0",
+    "postcss-scss": "^4.0.9",
     "rimraf": "^6.0.1",
-    "stylelint": "^13.7.2",
+    "stylelint": "^17.16.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.0",
     "vitest": "^4.0.8"
+  },
+  "overrides": {
+    "undici": "^7.30.1"
   }
 }
