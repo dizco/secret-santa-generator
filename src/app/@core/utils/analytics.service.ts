@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
 import { NB_WINDOW } from '@nebular/theme';
-import { Gtag, GtagEvent, GtagPageview } from 'angular-gtag';
 import { environment } from '../../../environments/environment';
 
 export const enum AnalyticsCategories {
@@ -8,17 +7,25 @@ export const enum AnalyticsCategories {
   SecretSantaGenerator = 'secretsantagenerator',
 }
 
-// tslint:disable
-declare var gtag: any;
-declare var google_tag_manager: any;
-// tslint:enable
+export interface GtagEvent {
+  event_category?: string;
+  event_label?: string;
+  value?: any;
+  [key: string]: any;
+}
+
+export interface GtagPageview {
+  page_title?: string;
+  page_path?: string;
+  page_location?: string;
+  [key: string]: any;
+}
 
 @Injectable()
 export class AnalyticsService {
   private readonly enabled: boolean = false;
 
-  constructor(@Inject(NB_WINDOW) private window,
-              private gtagService: Gtag) {
+  constructor(@Inject(NB_WINDOW) private window) {
     this.enabled = environment.analytics.enabled;
 
     // See https://developers.google.com/analytics/devguides/collection/gtagjs/user-opt-out
@@ -28,30 +35,38 @@ export class AnalyticsService {
   }
 
   private setAppName(): void {
-    // TODO: Bug in angular-gtag library, can't use the config function because it completely overwrites the parameters... params={}
-    /*this.gtagService.config({
-      app_name: environment.appName,
-    });*/
-
-    this.window.gtag('config', environment.analytics.trackingId, {
+    this.gtag('config', environment.analytics.trackingId, {
       app_name: environment.appName,
     });
   }
 
-  // tslint:disable-next-line
   private isGoogleTagManagerAvailable(): boolean {
     return !!this.window.google_tag_manager;
   }
 
+  // The gtag function is defined by the snippet in index.html
+  private gtag(...args: any[]): void {
+    try {
+      this.window.gtag(...args);
+    } catch (err) {
+      console.error('Google Analytics error', err);
+    }
+  }
+
   trackPageView(params?: GtagPageview): void {
     if (this.enabled) {
-      this.gtagService.pageview(params);
+      this.gtag('config', environment.analytics.trackingId, {
+        page_path: this.window.location.pathname,
+        page_title: 'Angular App',
+        page_location: this.window.location.href,
+        ...params,
+      });
     }
   }
 
   trackEvent(name: string, params?: GtagEvent): void {
     if (this.enabled) {
-      this.gtagService.event(name, params);
+      this.gtag('event', name, params ?? {});
     }
   }
 }

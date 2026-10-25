@@ -5,20 +5,21 @@ import { catchError, filter, map, takeUntil } from 'rxjs/operators';
 import { AuthWindowService } from '../../@core/auth/auth-window.service';
 
 @Component({
-  template: `
+    template: `
     <div class="text-center">
       <nb-alert status="danger" *ngIf="error">Oops, something unexpected happened. {{ error }}</nb-alert>
       <ng-container *ngIf="!error">Finishing logout...</ng-container>
     </div>
   `,
+    standalone: false
 })
 // Note: This class assumes that it is running in a separate window than the main window
 // Responsibility of creating the window is set on the component who triggers the logout flow
 export class LogoutCallbackComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  private strategy: string = '';
+  private strategy = '';
 
-  error: string = '';
+  error = '';
 
   constructor(private authService: NbAuthService,
               private authWindowService: AuthWindowService,

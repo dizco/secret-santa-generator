@@ -11,6 +11,14 @@
     width: 100%;
   }
 
+  .restrictions-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: nb-theme(text-caption-font-size);
+    color: nb-theme(text-hint-color);
+  }
+
   .draw-participant-card {
     width: 100%;
     line-height: 1rem;
@@ -41,6 +49,11 @@
         border-color: nb-theme(button-outline-#{$status}-disabled-border-color);
         color: nb-theme(button-outline-#{$status}-disabled-text-color);
       }
+    }
+
+    &.has-issue {
+      border-color: nb-theme(color-danger-default);
+      background-color: nb-theme(color-danger-transparent-default);
     }
 
     input {

@@ -7,6 +7,7 @@ import {
   NbIconModule,
   NbInputModule,
   NbListModule,
+  NbSelectModule,
   NbSpinnerModule,
   NbTooltipModule,
   NbUserModule,
@@ -16,13 +17,14 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { DashboardComponent } from './dashboard.component';
 import { FormsModule } from '@angular/forms';
 import { ConfirmPromptComponent } from './confirm-prompt.component';
-import { RecaptchaModule } from 'ng-recaptcha';
+import { RecaptchaModule } from 'ng-recaptcha-2';
 
 @NgModule({
   imports: [
     NbCardModule,
     NbIconModule,
     NbListModule,
+    NbSelectModule,
     NbUserModule,
     NbButtonModule,
     NbTooltipModule,
@@ -33,9 +35,6 @@ import { RecaptchaModule } from 'ng-recaptcha';
     NbDialogModule.forChild(),
     NbSpinnerModule,
     RecaptchaModule,
-  ],
-  entryComponents: [
-    ConfirmPromptComponent,
   ],
   declarations: [
     DashboardComponent,

@@ -15,7 +15,7 @@ import { MockDataModule } from './mock/mock-data.module';
 import { AuthWindowService } from './auth/auth-window.service';
 import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha';
+import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha-2';
 import { Auth0AuthStrategy, Auth0JWTToken, Auth0Token } from './auth/auth0-auth-strategy';
 import { LogLevel } from 'angular-auth-oidc-client';
 import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client';
@@ -66,7 +66,8 @@ export const NB_CORE_PROVIDERS = [
   AuthWindowService,
   NonDisruptiveAuthService,
   { provide: HTTP_INTERCEPTORS, useClass: NbAuthJWTInterceptor, multi: true },
-  { provide: NB_AUTH_TOKEN_INTERCEPTOR_FILTER, useValue: (req) => false }, // Let everything through
+  // Only attach tokens to mail server requests; intercepting Auth0 calls deadlocks token refresh
+  { provide: NB_AUTH_TOKEN_INTERCEPTOR_FILTER, useValue: (req) => !req.url.startsWith(environment.mailServerUrl) },
 
   NbSecurityModule.forRoot({
     accessControl: {

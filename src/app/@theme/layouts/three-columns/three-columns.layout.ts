@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'ngx-three-columns-layout',
-  styleUrls: ['./three-columns.layout.scss'],
-  template: `
+    selector: 'ngx-three-columns-layout',
+    styleUrls: ['./three-columns.layout.scss'],
+    template: `
     <nb-layout windowMode>
       <nb-layout-header fixed>
         <ngx-header></ngx-header>
@@ -28,5 +28,6 @@ import { Component } from '@angular/core';
       </nb-layout-footer>
     </nb-layout>
   `,
+    standalone: false
 })
 export class ThreeColumnsLayoutComponent {}

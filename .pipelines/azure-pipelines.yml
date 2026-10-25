@@ -26,7 +26,7 @@ stages:
     - task: NodeTool@0
       inputs:
         versionSource: 'spec'
-        versionSpec: '14.x'
+        versionSpec: '22.x'
 
     - template: templates/print-environment-variables.yaml
 
@@ -36,12 +36,12 @@ stages:
       inputs:
         command: ci
 
-    #- task: Npm@1
-    #  displayName: npm run lint:ci
-    #  timeoutInMinutes: 3
-    #  inputs:
-    #    command: custom
-    #    customCommand: run lint:ci
+    - task: Npm@1
+      displayName: npm run lint:ci
+      timeoutInMinutes: 3
+      inputs:
+        command: custom
+        customCommand: run lint:ci
 
     - task: Npm@1
       displayName: npm run test:once
@@ -56,14 +56,14 @@ stages:
       inputs:
         testRunTitle: npm run test:once
         testResultsFormat: JUnit
-        testResultsFiles: '**/TESTS-*.xml'
+        testResultsFiles: 'test-results/junit.xml'
 
     - task: PublishCodeCoverageResults@1
       displayName: Publish Code Coverage Results
       condition: succeededOrFailed()
       inputs:
         codeCoverageTool: Cobertura
-        summaryFileLocation: $(Build.SourcesDirectory)/coverage/cobertura-coverage.xml
+        summaryFileLocation: $(Build.SourcesDirectory)/coverage/ngx-admin-demo/cobertura-coverage.xml
 
     - task: Npm@1
       displayName: npm run e2e:ci
@@ -85,7 +85,7 @@ stages:
     - task: NodeTool@0
       inputs:
         versionSource: 'spec'
-        versionSpec: '14.x'
+        versionSpec: '22.x'
 
     - template: templates/print-environment-variables.yaml
 

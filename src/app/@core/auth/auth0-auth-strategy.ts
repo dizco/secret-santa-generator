@@ -107,7 +107,7 @@ export class Auth0AuthStrategy extends NbOAuth2AuthStrategy {
       .pipe(
         switchMap((result: boolean) => {
           if (!result) {
-            this.oidcService.authorize(null, {
+            this.oidcService.authorize(undefined, {
               customParams: {
                 // Audience is required if we want to receive JWT tokens.
                 // If not sent, we receive opaque access tokens.
