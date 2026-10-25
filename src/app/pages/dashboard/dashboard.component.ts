@@ -5,9 +5,8 @@ import { filter, map, mergeMap, switchMap, take, takeWhile, tap, toArray } from 
 import { AnalyticsService, DrawService, Participant } from '../../@core/utils';
 import { AnalyticsCategories } from '../../@core/utils/analytics.service';
 import { NbAuthService, NbAuthToken } from '@nebular/auth';
-import { NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
+import { NbDialogConfig, NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ConfirmPromptComponent, ConfirmPromptResult } from './confirm-prompt.component';
-import { NbDialogConfig } from '@nebular/theme/components/dialog/dialog-config';
 import { Auth0Token } from '../../@core/auth/auth0-auth-strategy';
 
 enum ResultsState {
@@ -17,9 +16,10 @@ enum ResultsState {
 }
 
 @Component({
-  selector: 'ngx-dashboard',
-  styleUrls: ['dashboard.component.scss'],
-  templateUrl: './dashboard.component.html',
+    selector: 'ngx-dashboard',
+    styleUrls: ['dashboard.component.scss'],
+    templateUrl: './dashboard.component.html',
+    standalone: false
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private alive = true;
@@ -37,7 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     map(v => v),
   );
 
-  isSending: boolean = false;
+  isSending = false;
 
   /**
    * Set when the restrictions make the draw impossible
@@ -336,7 +336,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formatNames(participants: Participant[], conjunction: string = 'and'): string {
+  private formatNames(participants: Participant[], conjunction = 'and'): string {
     const names = participants.map((p) => this.getDisplayName(p));
     if (names.length <= 1) {
       return names.join('');

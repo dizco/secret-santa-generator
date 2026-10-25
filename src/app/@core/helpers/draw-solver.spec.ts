@@ -8,10 +8,10 @@ function buildItems(count: number): Item[] {
 
 function expectValidDraw(items: Item[], result: Item[]): void {
   expect(result.length).toEqual(items.length);
-  expect(new Set(result).size).toEqual(items.length, 'Everybody should be picked exactly once');
+  expect(new Set(result).size, 'Everybody should be picked exactly once').toEqual(items.length);
   items.forEach((item, i) => {
-    expect(result[i]).not.toBe(item, 'Nobody should pick themselves');
-    expect(item.restrictions ?? []).not.toContain(result[i], 'Nobody should pick someone in their restrictions');
+    expect(result[i], 'Nobody should pick themselves').not.toBe(item);
+    expect(item.restrictions ?? [], 'Nobody should pick someone in their restrictions').not.toContain(result[i]);
   });
 }
 
@@ -143,7 +143,7 @@ describe('DrawSolver', () => {
       const error = catchUnsolvable(items);
 
       // Assert
-      expect(error).toEqual(jasmine.any(UnsolvableDrawError));
+      expect(error).toEqual(expect.any(UnsolvableDrawError));
       expect(error.group).toEqual({ side: 'pickers', members: [items[0]], candidates: [] });
     });
 

@@ -15,7 +15,7 @@ import { MockDataModule } from './mock/mock-data.module';
 import { AuthWindowService } from './auth/auth-window.service';
 import { NonDisruptiveAuthService } from './auth/non-disruptive-auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha';
+import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha-2';
 import { Auth0AuthStrategy, Auth0JWTToken, Auth0Token } from './auth/auth0-auth-strategy';
 import { LogLevel } from 'angular-auth-oidc-client';
 import { AuthModule as OidcAuthModule } from 'angular-auth-oidc-client';

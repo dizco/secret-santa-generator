@@ -13,8 +13,9 @@ import { environment } from '../environments/environment';
 import { AnalyticsCategories } from './@core/utils/analytics.service';
 
 @Component({
-  selector: 'ngx-app',
-  template: '<router-outlet></router-outlet>',
+    selector: 'ngx-app',
+    template: '<router-outlet></router-outlet>',
+    standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {
   private alive = true;
